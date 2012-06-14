@@ -33,7 +33,6 @@ function calculo_frete_correios_api($cod_empresa,
     *
          41106 = PAC sem contrato
          40010 = SEDEX sem contrato
-         40045 = SEDEX a Cobrar, sem contrato
          40215 = SEDEX 10, sem contrato
          40290 = SEDEX Hoje, sem contrato
          40096 = SEDEX com contrato
@@ -44,12 +43,6 @@ function calculo_frete_correios_api($cod_empresa,
     *
     *
     */
- 
-   // ESTE ARRAYS PARA O RETORNO (NO MEU CASO SÓ QUERO MOSTRAR ESTES)
-   $rotulo = array( '41106'=>'PAC sem contrato',
-                    '40010'=>'SEDEX sem contrato',
-                    '40215'=>'SEDEX 10, sem contrato',
-                    '40290'=>'SEDEX Hoje, sem contrato');
  
    //$webservice = 'http://shopping.correios.com.br/wbm/shopping/script/CalcPrecoPrazo.asmx?WSDL';// URL ANTIGA
    $webservice = 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx?WSDL';
