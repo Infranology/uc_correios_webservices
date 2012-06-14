@@ -35,8 +35,8 @@ function uc_correios_webservices_requirements($phase) {
  */
 function uc_correios_webservices_install() {
   // set default variables.
-  variable_set('uc_correios_webservices_services', array('41106' => '41106', '40010' => '40010'));
-  variable_set('uc_correios_webservices_default_engine', array('0' => 'Correios', '1' => 'w21studio free quotes'));
+  variable_set('uc_correios_webservices_contract', array('0' => 'Sem Contrato', '1' => 'Com Contrato'));
+  variable_set('uc_correios_webservices_without_contract_services', array('41106' => '41106', '40010' => '40010', '40215' => '40215', '40290' => '40290'));
   variable_set('uc_correios_webservices_pac_length', 16);
   variable_set('uc_correios_webservices_pac_height', 2);
   variable_set('uc_correios_webservices_pac_depth', 11);
@@ -48,11 +48,11 @@ function uc_correios_webservices_install() {
 function uc_correios_webservices_uninstall() {
 
   variable_del('uc_correios_webservices_services');
-  variable_del('uc_correios_webservices_curl_enabled');
+  // variable_del('uc_correios_webservices_curl_enabled');
   variable_del('uc_correios_webservices_send_declared_value');
   variable_del('uc_correios_webservices_default_engine');
   variable_del('uc_correios_webservices_display_time_estimate');
-  variable_del('uc_correios_webservices_w21studio_token');
+  // variable_del('uc_correios_webservices_w21studio_token');
   variable_del('uc_correios_webservices_pac_length');
   variable_del('uc_correios_webservices_pac_height');
   variable_del('uc_correios_webservices_pac_depth');
@@ -63,19 +63,19 @@ function uc_correios_webservices_uninstall() {
 }
 
 
-/**
- * Upgrade internal variable.
- */
-function uc_correios_webservices_update_6000() {
-  $ret = array();
+// /**
+//  * Upgrade internal variable.
+//  */
+// function uc_correios_webservices_update_6000() {
+//   $ret = array();
 
-  variable_del('uc_correios_webservices_curl_enabled');
-  variable_set('uc_correios_webservices_curl_enabled', FALSE);
+//   variable_del('uc_correios_webservices_curl_enabled');
+//   variable_set('uc_correios_webservices_curl_enabled', FALSE);
 
-  $ret[] = array('success' => TRUE, 'query' => 'Upgraded the variable that controls the connection type.');
+//   $ret[] = array('success' => TRUE, 'query' => 'Upgraded the variable that controls the connection type.');
 
-  return $ret;
-}
+//   return $ret;
+// }
 
 /**
  * Import new translations.
