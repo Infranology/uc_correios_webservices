@@ -24,7 +24,7 @@ function uc_correios_webservices_requirements($phase) {
   );
   if (!$has_simplexml) {
     $requirements['uc_correios_webservices_simplexml']['severity'] = REQUIREMENT_ERROR;
-    $requirements['uc_correios_webservices_simplexml']['description'] = $t('Correios Quotes requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
+    $requirements['uc_correios_webservices_simplexml']['description'] = $t('Correios Webservices requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
   }
 
   return $requirements;
