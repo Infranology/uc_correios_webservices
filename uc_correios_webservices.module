@@ -159,7 +159,6 @@ function uc_correios_webservices_shipping_type() {
   return $types;
 }
 
-
 /**
  * Implementation of Übercart's hook_shipping_method().
  */
@@ -186,7 +185,6 @@ function uc_correios_webservices_shipping_method() {
 
 
 // Menu Callbacks                                                             *
-
 
 /**
  * Configure the store default shipping rate.
@@ -332,6 +330,21 @@ function uc_correios_webservices_admin_settings() {
 
 // Module Functions                                                           *
 
+/**
+ * List of delivery services by Correios
+ *
+ * @return array
+ */
+function _uc_correios_webservices_without_contract_services() {
+    return array(
+        '41106' => t('PAC'),
+        '40010' => t('SEDEX'),
+        '40215' => t('SEDEX 10'),
+        '40290' => t('SEDEX Hoje')
+    );
+}
+
+
 
 /**
  * Return a formated URL for default service engine and selected kind of service.
@@ -436,21 +449,6 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
   else {
     return drupal_http_request($url);
   }
-}
-
-
-/**
- * List of delivery services by Correios
- *
- * @return array
- */
-function _uc_correios_webservices_without_contract_services() {
-    return array(
-        '41106' => t('PAC'),
-        '40010' => t('SEDEX'),
-        '40215' => t('SEDEX 10'),
-        '40290' => t('SEDEX Hoje')
-    );
 }
 
 /**
