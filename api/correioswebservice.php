@@ -11,7 +11,7 @@
  * XD divirta-se
  *
  */
-function frete_correios($cod_empresa, 
+function calculo_frete_correios_api($cod_empresa, 
                         $senha, 
                         $cep_origem, 
                         $cep_destino, 
