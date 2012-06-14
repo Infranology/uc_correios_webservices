@@ -1,13 +1,6 @@
-name = Correios Quotes
-description =  Module to calculate shipping costs based on Brazil correios webservice integration.
+name = UC Correios Webservices
+description = Module to calculate shipping costs based on Brazil Correios Webservice integration.
 dependencies[] = uc_quote
 package = Ubercart - fulfillment
-core = 6.x
 php = 5.0
-version = "6.x-1.x-dev"
-; Information added by drupal.org packaging script on 2011-05-24
-version = "6.x-1.0"
-core = "6.x"
-project = "uc_correios_webservices"
-datestamp = ""
-
+core = 6.x
