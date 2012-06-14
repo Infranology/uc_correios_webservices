@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Install hooks for uc_correios_quotes.module
+ * Install hooks for uc_correios_webservices.module
  *
  * Coded by/Desenvolvido por Wanderson S. Reis aka wasare
  *
@@ -14,17 +14,17 @@
  * "ported" from uc_ups_requirements found at ubercart/shipping/uc_ups/uc_ups.install
  *
  */
-function uc_correios_quotes_requirements($phase) {
+function uc_correios_webservices_requirements($phase) {
   $t = get_t();
 
   $has_simplexml = class_exists('SimpleXMLElement');
-  $requirements['uc_correios_quotes_simplexml'] = array(
+  $requirements['uc_correios_webservices_simplexml'] = array(
     'title' => $t('SimpleXML'),
     'value' => $has_simplexml ? $t('Enabled') : $t('Not found'),
   );
   if (!$has_simplexml) {
-    $requirements['uc_correios_quotes_simplexml']['severity'] = REQUIREMENT_ERROR;
-    $requirements['uc_correios_quotes_simplexml']['description'] = $t('Correios Quotes requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
+    $requirements['uc_correios_webservices_simplexml']['severity'] = REQUIREMENT_ERROR;
+    $requirements['uc_correios_webservices_simplexml']['description'] = $t('Correios Quotes requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
   }
 
   return $requirements;
@@ -33,31 +33,31 @@ function uc_correios_quotes_requirements($phase) {
 /**
  * Implementation of hook_install().
  */
-function uc_correios_quotes_install() {
+function uc_correios_webservices_install() {
   // set default variables.
-  variable_set('uc_correios_quotes_services', array('41106' => '41106', '40010' => '40010'));
-  variable_set('uc_correios_quotes_default_engine', array('0' => 'Correios', '1' => 'w21studio free quotes'));
-  variable_set('uc_correios_quotes_pac_length', 16);
-  variable_set('uc_correios_quotes_pac_height', 2);
-  variable_set('uc_correios_quotes_pac_depth', 11);
+  variable_set('uc_correios_webservices_services', array('41106' => '41106', '40010' => '40010'));
+  variable_set('uc_correios_webservices_default_engine', array('0' => 'Correios', '1' => 'w21studio free quotes'));
+  variable_set('uc_correios_webservices_pac_length', 16);
+  variable_set('uc_correios_webservices_pac_height', 2);
+  variable_set('uc_correios_webservices_pac_depth', 11);
 }
 
 /**
  * Implementation of hook_uninstall().
  */
-function uc_correios_quotes_uninstall() {
+function uc_correios_webservices_uninstall() {
 
-  variable_del('uc_correios_quotes_services');
-  variable_del('uc_correios_quotes_curl_enabled');
-  variable_del('uc_correios_quotes_send_declared_value');
-  variable_del('uc_correios_quotes_default_engine');
-  variable_del('uc_correios_quotes_display_time_estimate');
-  variable_del('uc_correios_quotes_w21studio_token');
-  variable_del('uc_correios_quotes_pac_length');
-  variable_del('uc_correios_quotes_pac_height');
-  variable_del('uc_correios_quotes_pac_depth');
-  variable_del('uc_correios_quotes_estimanting_by_product_enabled');
-  variable_del('uc_correios_quotes_estimating_by_product_message');
+  variable_del('uc_correios_webservices_services');
+  variable_del('uc_correios_webservices_curl_enabled');
+  variable_del('uc_correios_webservices_send_declared_value');
+  variable_del('uc_correios_webservices_default_engine');
+  variable_del('uc_correios_webservices_display_time_estimate');
+  variable_del('uc_correios_webservices_w21studio_token');
+  variable_del('uc_correios_webservices_pac_length');
+  variable_del('uc_correios_webservices_pac_height');
+  variable_del('uc_correios_webservices_pac_depth');
+  variable_del('uc_correios_webservices_estimanting_by_product_enabled');
+  variable_del('uc_correios_webservices_estimating_by_product_message');
 
   cache_clear_all('variables', 'cache');
 }
@@ -66,11 +66,11 @@ function uc_correios_quotes_uninstall() {
 /**
  * Upgrade internal variable.
  */
-function uc_correios_quotes_update_6000() {
+function uc_correios_webservices_update_6000() {
   $ret = array();
 
-  variable_del('uc_correios_quotes_curl_enabled');
-  variable_set('uc_correios_quotes_curl_enabled', FALSE);
+  variable_del('uc_correios_webservices_curl_enabled');
+  variable_set('uc_correios_webservices_curl_enabled', FALSE);
 
   $ret[] = array('success' => TRUE, 'query' => 'Upgraded the variable that controls the connection type.');
 
@@ -80,11 +80,11 @@ function uc_correios_quotes_update_6000() {
 /**
  * Import new translations.
  */
-function uc_correios_quotes_update_6005() {
+function uc_correios_webservices_update_6005() {
   $ret = array();
 
   if (module_exists('locale')) {
-    locale_system_update(array('uc_correios_quotes'));
+    locale_system_update(array('uc_correios_webservices'));
     $ret[] = array('success' => TRUE, 'query' => 'New translations were imported.');
   }
   return $ret;
