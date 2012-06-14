@@ -175,7 +175,7 @@ function uc_correios_webservices_shipping_method() {
     'quote' => array(
       'type' => 'small_package',
       'callback' => 'uc_correios_webservices_quote',
-      'accessorials' => _uc_correios_webservices_services_list(),
+      'accessorials' => _uc_correios_webservices_without_contract_services(),
     ),
     'weight' => $weight['correios_webservices'],
     'enabled' => $enabled['correios_webservices'],
@@ -193,129 +193,140 @@ function uc_correios_webservices_shipping_method() {
  */
 function uc_correios_webservices_admin_settings() {
 
-  $form = array();
+    $form = array();
 
-  $form['uc_correios_webservices_general'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Correios Quotes Settings'),
-    '#collapsible' => FALSE,
-    '#collapsed' => FALSE,
-  );
+    $form['uc_correios_webservices_general'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Correios Webservices Settings'),
+        '#collapsible' => FALSE,
+        '#collapsed' => FALSE
+    );
 
-  $form['uc_correios_webservices_general']['uc_correios_webservices_default_engine'] = array(
-    '#type' => 'select',
-    '#title' => t('Default Service Engine'),
-    '#description' => t('Fetch quotes from Correios (Brazilian Postal Service) or other service avaliable.'),
-    '#default_value' => variable_get('uc_correios_webservices_default_engine', 0),
-    '#options' => _uc_correios_webservices_engines_list(),
-    '#required' => TRUE,
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_contract'] = array(
+        '#type' => 'select',
+        '#title' => t('Contract type'),
+        '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+        '#default_value' => variable_get('uc_correios_webservices_contract', 0),
+        '#options' => array(
+            0 => t('No contract'),
+            1 => t('With contract')
+        ),
+        '#required' => TRUE
+    );
+    
+    $form['uc_correios_webservices_general']['uc_correios_webservices_without_contract_services'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Services'),
+        '#description' => t('Select the kinds of shipping services will be avaliable for costumers.'),
+        '#default_value' => variable_get('uc_correios_webservices_without_contract_services', _uc_correios_webservices_without_contract_services()),
+        '#options' => _uc_correios_webservices_without_contract_services()
+    );
 
-  $form['uc_correios_webservices_general']['uc_correios_webservices_services'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Correios Services'),
-    '#default_value' => variable_get('uc_correios_webservices_services', _uc_correios_webservices_services_list()),
-    '#options' => _uc_correios_webservices_services_list(),
-    '#description' => t('Select the kinds of shipping services will be avaliable for costumers.'),
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_username'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Username'),
+        '#size' => 20,
+        '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+        '#default_value' => variable_get('uc_correios_webservices_username', ''),
+        '#required' => FALSE
+    );
 
-  $form['uc_correios_webservices_general']['uc_correios_webservices_display_time_estimate'] = array(
-    '#default_value'  => variable_get('uc_correios_webservices_display_time_estimate', FALSE),
-    '#description'    => t('The shipping time estimate will be displayed when avaliable.'),
-    '#title'          => t('Show shipping time estimate'),
-    '#type'           => 'checkbox'
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_password'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Password'),
+        '#size' => 20,
+        '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+        '#default_value' => variable_get('uc_correios_webservices_password', ''),
+        '#required' => FALSE
+    );
 
-  $form['uc_correios_webservices_general']['uc_correios_webservices_send_declared_value'] = array(
-    '#default_value'  => variable_get('uc_correios_webservices_send_declared_value', FALSE),
-    '#description'    => t('The total order price will be sent as "declared value" when supported by webservice, this option increases the shipping cost.'),
-    '#title'          => t('Send order total price as "declared value"'),
-    '#type'           => 'checkbox'
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_with_contract_services'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Services'),
+        '#description' => t('Select the kinds of shipping services will be avaliable for costumers.'),
+        '#default_value' => variable_get('uc_correios_webservices_with_contract_services', ''),
+        '#options' => array(
+            '41068' => t('PAC'),
+            '40096' => t('SEDEX'),
+            '40215' => t('SEDEX 10'),
+            '40290' => t('SEDEX Hoje'),
+            '81019' => t('e-SEDEX')
+        )
+    );
 
-  $form['uc_correios_webservices_general']['uc_correios_webservices_curl_enabled'] = array(
-    '#default_value'  => variable_get('uc_correios_webservices_curl_enabled', FALSE),
-    '#description'    => t('Connect using cURL lib is more recommended, instead of using a drupal_http_request.'),
-    '#title'          => t('Use cURL lib to connection.'),
-    '#type'           => 'checkbox'
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_display_time_estimate'] = array(
+        '#type' => 'checkbox',
+        '#title'=> t('Show shipping time estimate'),
+        '#description' => t('The shipping time estimate will be displayed when avaliable.'),
+        '#default_value' => variable_get('uc_correios_webservices_display_time_estimate', FALSE)
+    );
 
-  $form['uc_correios_webservices_general']['estimanting_quotes_by_product'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Estimate Shipping Cost On Product Page'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE
-  );
+    $form['uc_correios_webservices_general']['uc_correios_webservices_send_declared_value'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Send order total price as "declared value"'),
+        '#description' => t('The total order price will be sent as "declared value" when supported by webservice, this option increases the shipping cost.'),
+        '#default_value'  => variable_get('uc_correios_webservices_send_declared_value', FALSE)
+    );
 
-  $form['uc_correios_webservices_general']['estimanting_quotes_by_product']['uc_correios_webservices_estimanting_by_product_enabled'] = array(
-    '#default_value'  => variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE),
-    '#description'    => t('Show a block to estimate shipping cost on each product page.'),
-    '#title'          => t('Enable estimate shipping cost on product page.'),
-    '#type'           => 'checkbox'
-  );
-  
-  $form['uc_correios_webservices_general']['estimanting_quotes_by_product']['uc_correios_webservices_estimating_by_product_message'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Message text'),
-    '#description' => t('A custom message displayed when a estimative shipping cost was received on product page.'),
-    '#default_value' => variable_get('uc_correios_webservices_estimating_by_product_message', t('The shipping cost estimate bellow refers only to this item by buying more items the shipping cost may be proportionately cheaper or even free. <br /> <strong> See the terms of the store and the minimum value for orders. </ strong>')),
-  );
+    $form['uc_correios_webservices_pac'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Correios PAC setup'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE
+    );
 
-  $form['uc_correios_webservices_w21studio'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Frete w21studio setup'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE
-  );
+    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_length'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Package length'),
+        '#size' => 6,
+        '#maxlength' => 8,
+        '#description' => t("Package length range 16 to 60 centimeters."),
+        '#default_value' => variable_get('uc_correios_webservices_pac_length', 16),
+        '#required' => TRUE,
+    );
 
-  $form['uc_correios_webservices_w21studio']['uc_correios_webservices_w21studio_token'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Access token'),
-    '#size' => 10,
-    '#maxlength' => 12,
-    '#description' => t("Your account access token at w21studio free quotes service. <strong>Register to get a access token at</strong> <a href=\"@w21studio_link\" target=\"_blank\">@w21studio_link</a>.", array('@w21studio_link' => 'http://frete.w21studio.com/')),
-    '#default_value' => variable_get('uc_correios_webservices_w21studio_token', ''),
-    '#required' => FALSE,
-  );
+    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_height'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Package height'),
+        '#size' => 6,
+        '#maxlength' => 8,
+        '#description' => t("Package height range 2 to 60 centimeters."),
+        '#default_value' => variable_get('uc_correios_webservices_pac_height', 2),
+        '#required' => TRUE,
+    );
 
-  $form['uc_correios_webservices_pac'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Correios PAC setup'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE
-  );
+    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_depth'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Package depth'),
+        '#size' => 6,
+        '#maxlength' => 8,
+        '#description' => t("Package depth range 5 to 60 centimeters."),
+        '#default_value' => variable_get('uc_correios_webservices_pac_depth', 11),
+        '#required' => TRUE,
+    );
 
-  $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_length'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Package length'),
-    '#size' => 6,
-    '#maxlength' => 8,
-    '#description' => t("Package length range 16 to 60 centimeters."),
-    '#default_value' => variable_get('uc_correios_webservices_pac_length', 16),
-    '#required' => TRUE,
-  );
+    $form['uc_correios_webservices_estimanting_quotes_by_product'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Estimating shipping cost on product page'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE
+    );
 
-  $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_height'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Package height'),
-    '#size' => 6,
-    '#maxlength' => 8,
-    '#description' => t("Package height range 2 to 60 centimeters."),
-    '#default_value' => variable_get('uc_correios_webservices_pac_height', 2),
-    '#required' => TRUE,
-  );
+    $form['uc_correios_webservices_estimanting_quotes_by_product']['uc_correios_webservices_estimanting_by_product_enabled'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable estimate shipping'),
+        '#description' => t('Show a block to estimate shipping cost on each product page.'),
+        '#default_value' => variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE)
+    );
 
-  $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_depth'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Package depth'),
-    '#size' => 6,
-    '#maxlength' => 8,
-    '#description' => t("Package depth range 5 to 60 centimeters."),
-    '#default_value' => variable_get('uc_correios_webservices_pac_depth', 11),
-    '#required' => TRUE,
-  );
+    $form['uc_correios_webservices_estimanting_quotes_by_product']['uc_correios_webservices_estimating_by_product_message'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Message'),
+        '#description' => t('A custom message displayed when a estimative shipping cost was received on product page.'),
+        '#default_value' => variable_get('uc_correios_webservices_estimating_by_product_message', t('The shipping cost estimate bellow refers only to this item by buying more items the shipping cost may be proportionately cheaper or even free. <br /> <strong> See the terms of the store and the minimum value for orders. </ strong>')),
+    );
 
-  return system_settings_form($form);
+    return system_settings_form($form);
 }
 
 
@@ -433,27 +444,13 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
  *
  * @return array
  */
-function _uc_correios_webservices_services_list() {
-  return array(
-    '41106' => t('Frete via PAC'),
-    '40010' => t('Frete via SEDEX'),
-    //  '40215' => t('SEDEX 10'),
-    //  '40290' => t('SEDEX HOJE'),
-    //  '81019' => t('E-SEDEX'),
-    //  '44105' => t('MALOTE'),
-  );
-}
-
-/**
- * List of services engines
- *
- * @return array
- */
-function _uc_correios_webservices_engines_list() {
-  return array(
-    '0' => t('Correios'),
-    '1' => t('w21studio free quotes'),
-  );
+function _uc_correios_webservices_without_contract_services() {
+    return array(
+        '41106' => t('PAC'),
+        '40010' => t('SEDEX'),
+        '40215' => t('SEDEX 10'),
+        '40290' => t('SEDEX Hoje')
+    );
 }
 
 /**
