@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Install hooks for uc_correios_webservices.module
@@ -7,7 +8,6 @@
  *
  */
 
-
 /**
  * Implementation of hook_requirements().
  *
@@ -15,31 +15,31 @@
  *
  */
 function uc_correios_webservices_requirements($phase) {
-  $t = get_t();
+    $t = get_t();
 
-  $has_simplexml = class_exists('SimpleXMLElement');
-  $requirements['uc_correios_webservices_simplexml'] = array(
-    'title' => $t('SimpleXML'),
-    'value' => $has_simplexml ? $t('Enabled') : $t('Not found'),
-  );
-  if (!$has_simplexml) {
-    $requirements['uc_correios_webservices_simplexml']['severity'] = REQUIREMENT_ERROR;
-    $requirements['uc_correios_webservices_simplexml']['description'] = $t('Correios Webservices requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
-  }
+    $has_simplexml = class_exists('SimpleXMLElement');
+    $requirements['uc_correios_webservices_simplexml'] = array(
+        'title' => $t('SimpleXML'),
+        'value' => $has_simplexml ? $t('Enabled') : $t('Not found'),
+    );
+    if (!$has_simplexml) {
+        $requirements['uc_correios_webservices_simplexml']['severity'] = REQUIREMENT_ERROR;
+        $requirements['uc_correios_webservices_simplexml']['description'] = $t('Correios Webservices requires the PHP <a href="!simplexml_url">SimpleXML</a> library.', array('!simplexml_url' => 'http://php.net/manual/en/simplexml.setup.php'));
+    }
 
-  return $requirements;
+    return $requirements;
 }
 
 /**
  * Implementation of hook_install().
  */
 function uc_correios_webservices_install() {
-  // set default variables.
-  variable_set('uc_correios_webservices_contract', array('0' => 'No contract', '1' => 'With contract'));
-  variable_set('uc_correios_webservices_without_contract_services', array('41106' => '41106', '40010' => '40010', '40215' => '40215', '40290' => '40290'));
-  variable_set('uc_correios_webservices_pac_length', 16);
-  variable_set('uc_correios_webservices_pac_height', 2);
-  variable_set('uc_correios_webservices_pac_depth', 11);
+    // set default variables.
+    variable_set('uc_correios_webservices_contract', array('0' => 'No contract', '1' => 'With contract'));
+    variable_set('uc_correios_webservices_without_contract_services', array('41106' => '41106', '40010' => '40010', '40215' => '40215', '40290' => '40290'));
+    variable_set('uc_correios_webservices_pac_length', 16);
+    variable_set('uc_correios_webservices_pac_height', 2);
+    variable_set('uc_correios_webservices_pac_depth', 11);
 }
 
 /**
@@ -47,33 +47,30 @@ function uc_correios_webservices_install() {
  */
 function uc_correios_webservices_uninstall() {
 
-  variable_del('uc_correios_webservices_services');
-  // variable_del('uc_correios_webservices_curl_enabled');
-  variable_del('uc_correios_webservices_send_declared_value');
-  variable_del('uc_correios_webservices_default_engine');
-  variable_del('uc_correios_webservices_display_time_estimate');
-  // variable_del('uc_correios_webservices_w21studio_token');
-  variable_del('uc_correios_webservices_pac_length');
-  variable_del('uc_correios_webservices_pac_height');
-  variable_del('uc_correios_webservices_pac_depth');
-  variable_del('uc_correios_webservices_estimanting_by_product_enabled');
-  variable_del('uc_correios_webservices_estimating_by_product_message');
+    variable_del('uc_correios_webservices_contract');
+    variable_del('uc_correios_webservices_without_contract_services');
+    variable_del('uc_correios_webservices_username');
+    variable_del('uc_correios_webservices_password');
+    variable_del('uc_correios_webservices_with_contract_services');
+    variable_del('uc_correios_webservices_display_time_estimate');
+    variable_del('uc_correios_webservices_send_declared_value');
+    variable_del('uc_correios_webservices_pac_length');
+    variable_del('uc_correios_webservices_pac_height');
+    variable_del('uc_correios_webservices_pac_depth');
+    variable_del('uc_correios_webservices_estimanting_by_product_enabled');
+    variable_del('uc_correios_webservices_estimating_by_product_message');
 
-  cache_clear_all('variables', 'cache');
+    cache_clear_all('variables', 'cache');
 }
-
 
 // /**
 //  * Upgrade internal variable.
 //  */
 // function uc_correios_webservices_update_6000() {
 //   $ret = array();
-
 //   variable_del('uc_correios_webservices_curl_enabled');
 //   variable_set('uc_correios_webservices_curl_enabled', FALSE);
-
 //   $ret[] = array('success' => TRUE, 'query' => 'Upgraded the variable that controls the connection type.');
-
 //   return $ret;
 // }
 
@@ -81,11 +78,11 @@ function uc_correios_webservices_uninstall() {
  * Import new translations.
  */
 function uc_correios_webservices_update_6005() {
-  $ret = array();
+    $ret = array();
 
-  if (module_exists('locale')) {
-    locale_system_update(array('uc_correios_webservices'));
-    $ret[] = array('success' => TRUE, 'query' => 'New translations were imported.');
-  }
-  return $ret;
+    if (module_exists('locale')) {
+        locale_system_update(array('uc_correios_webservices'));
+        $ret[] = array('success' => TRUE, 'query' => 'New translations were imported.');
+    }
+    return $ret;
 }
