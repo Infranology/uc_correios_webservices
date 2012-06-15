@@ -330,6 +330,23 @@ function uc_correios_webservices_admin_settings() {
 // Module Functions
 
 /**
+ * Debug function
+ */
+function myTrace($msg) {
+    $filename = "/Users/claudiosanches/dev/www/debug.txt";
+    
+    ob_start(); //Start buffering
+    print_r($msg); //print the result
+    $output = ob_get_contents(); //get the result from buffer
+    ob_end_clean(); //close buffer
+
+    $h = fopen($filename, 'w'); //open a file
+    fwrite($h, $output . "\n \n \n"); //write the output text
+    fclose($h); //close file
+
+}
+
+/**
  * List of delivery services by Correios
  *
  * @return array
