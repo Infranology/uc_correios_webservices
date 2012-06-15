@@ -378,6 +378,26 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
     return $total;
 }
 
+/**
+ *
+ * @param type $value
+ *    Total purchase
+ * @return
+ *    Declared value
+ */
+function uc_correios_webservice_declared_valeu($value) {
+    $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
+    
+    switch ($key) :
+        case 1 :
+            return $value;
+            break;
+        default :
+            return '0';
+            break;
+    endswitch;
+    
+}
 
 /**
  * Return a formated URL for default service engine and selected kind of service.
