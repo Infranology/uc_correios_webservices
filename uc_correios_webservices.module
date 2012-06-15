@@ -333,7 +333,7 @@ function uc_correios_webservices_admin_settings() {
  * Debug function
  */
 function myTrace($msg) {
-    $filename = "/Users/claudiosanches/dev/www/debug.txt";
+  /*  $filename = "/Users/claudiosanches/dev/www/debug.txt";
     
     ob_start(); //Start buffering
     print_r($msg); //print the result
@@ -343,7 +343,7 @@ function myTrace($msg) {
     $h = fopen($filename, 'w'); //open a file
     fwrite($h, $output . "\n \n \n"); //write the output text
     fclose($h); //close file
-
+*/
 }
 
 /**
@@ -582,6 +582,29 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
  *    object containing rate, error, and debugging information
  */
 function uc_correios_webservices_quote($products, $details) {
+    
+    $product = uc_correios_webservices_products($products);
+    
+    $cod_empresa = '';
+    $senha       = '';
+    
+    $cep_origem  = '';
+    $cep_destino = '';
+    
+    $altura      = $product['height'];
+    $largura     = $product['width'];
+    $comprimento = $product['length'];
+    
+    $peso        = $product['weight'];
+    
+    $servico     = '';
+
+    $valor_declarado = uc_correios_webservice_declared_valeu($product['price']);
+    
+    $retorno = 'object';
+    
+    //myTrace(array($product['price'], $valor_declarado));
+    
 /*
     $xml = '';
     $quotes = array();
