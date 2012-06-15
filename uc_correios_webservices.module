@@ -8,7 +8,7 @@
  *
  */
 
-// Drupal Hooks                                                               *
+// Drupal Hooks
 
 /**
  * Implementation of hook_menu().
@@ -17,17 +17,17 @@ function uc_correios_webservices_menu() {
     $items = array();
 
     $items['admin/store/settings/quotes/methods/correios_webservices'] = array(
-      'title' => 'Correios Webservices',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('uc_correios_webservices_admin_settings'),
-      'access arguments' => array('configure quotes'),
-      'type' => MENU_LOCAL_TASK,
+        'title' => 'Correios Webservices',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('uc_correios_webservices_admin_settings'),
+        'access arguments' => array('configure quotes'),
+        'type' => MENU_LOCAL_TASK,
     );
 
     $items['correios_webservices/estimating/quotes'] = array(
-      'page callback' => 'uc_correios_webservices_estimating_quotes',
-      'access arguments' => array('access content'),
-      'type' => MENU_CALLBACK,
+        'page callback' => 'uc_correios_webservices_estimating_quotes',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
     );
 
     return $items;
@@ -37,16 +37,16 @@ function uc_correios_webservices_menu() {
  * Implementation of hook_init().
  */
 function uc_correios_webservices_init() {
-  
-  global $conf;
-  $conf['i18n_variables'][] = 'uc_correios_webservices_estimating_by_product_message';
+
+    global $conf;
+    $conf['i18n_variables'][] = 'uc_correios_webservices_estimating_by_product_message';
 }
 
 /**
  * Implementation of hook_perm().
  */
 function uc_correios_webservices_perm() {
-  return array('administer correios quotes');
+    return array('administer correios quotes');
 }
 
 /**
@@ -56,135 +56,133 @@ function uc_correios_webservices_perm() {
  * Connect the correios_webservices action and event.
  */
 function uc_correios_webservices_ca_predicate() {
-  $enabled = variable_get('uc_quote_enabled', array('correios_webservices' => TRUE));
+    $enabled = variable_get('uc_quote_enabled', array('correios_webservices' => TRUE));
 
-  $predicates = array(
-    'uc_correios_webservices_get_quote' => array(
-    '#title' => t('Shipping quotes via correios services'),
-    '#trigger' => 'get_quote_from_correios_webservices',
-    '#class' => 'uc_correios_webservices',
-    '#status' => $enabled['correios_webservices'],
-    '#actions' => array(
-      array(
-        '#name' => 'uc_quote_action_get_quote',
-        '#title' => t('Fetch a shipping quote'),
-        '#argument_map' => array(
-          'order' => 'order',
-          'method' => 'method',
-        ),
-      ),
-    ),
-  ));
-  return $predicates;
+    $predicates = array(
+        'uc_correios_webservices_get_quote' => array(
+            '#title' => t('Shipping quotes via correios services'),
+            '#trigger' => 'get_quote_from_correios_webservices',
+            '#class' => 'uc_correios_webservices',
+            '#status' => $enabled['correios_webservices'],
+            '#actions' => array(
+                array(
+                    '#name' => 'uc_quote_action_get_quote',
+                    '#title' => t('Fetch a shipping quote'),
+                    '#argument_map' => array(
+                        'order' => 'order',
+                        'method' => 'method',
+                    ),
+                ),
+            ),
+            ));
+    return $predicates;
 }
 
 /**
  * Implementation of hook_form_alter().
  */
 function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'uc_cart_pane_quotes') {
-    $form['delivery_country']['#type'] = 'hidden';
-    $form['delivery_zone']['#type'] = 'hidden';
-  }
-
-  if (strpos($form_id, 'uc_product_add_to_cart_form_') === 0 && variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE)) {
-
-    if (arg(0)=='node' && is_numeric(arg(1))) {
-      
-      $nid = arg(1);    
-     
-      $form['correios_webservices'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Estimating shipping cost'),
-        '#collapsible' => FALSE,
-        '#collapsed' => FALSE,
-      );
-        
-      $form['correios_webservices']['nid'] = array('#type' => 'hidden',
-       '#value' => $nid,
-      );  
-  
-      $form['correios_webservices']['uc_correios_webservices_postal_code'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Enter your postal code'),
-        '#size' => 10,
-        '#maxlength' => 8,
-        '#required' => FALSE,
-      );
-      
-      $form['correios_webservices']['uc_correios_webservices_get_rate'] = array(
-        '#type' => 'button',
-        '#value' => t('Get Correios Quotes'),
-        '#ahah' => array(
-          'event' => 'click',
-          'path' => 'correios_webservices/estimating/quotes',
-          'wrapper' => 'correios-quotes-estimated',
-          'effect' => 'fade',
-          'progress' => array(
-            'type' => 'bar',
-            'message' => t('Receiving quotes:'),
-          ),
-        '#suffix' => '<br />',
-        ),
-      );
-      
-      $form['correios_webservices']['uc_correios_webservices_find_postal_code'] = array(
-        '#value' =>  l(t('Find my Postal Code'), 'http://www.correios.com.br/servicos/cep/cep_loc_log.cfm', array('attributes' => array('target' => '_blank'))),
-      );
-  
-      $form['correios_webservices']['estimated_cost'] = array('#type' => 'markup',
-       '#value' => '<div id="correios-quotes-estimated"></div>',
-       '#prefix' => '<br /><br />',
-      );
-
+    if ($form_id == 'uc_cart_pane_quotes') {
+        $form['delivery_country']['#type'] = 'hidden';
+        $form['delivery_zone']['#type'] = 'hidden';
     }
-  }
+
+    if (strpos($form_id, 'uc_product_add_to_cart_form_') === 0 && variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE)) {
+
+        if (arg(0) == 'node' && is_numeric(arg(1))) {
+
+            $nid = arg(1);
+
+            $form['correios_webservices'] = array(
+                '#type' => 'fieldset',
+                '#title' => t('Estimating shipping cost'),
+                '#collapsible' => FALSE,
+                '#collapsed' => FALSE,
+            );
+
+            $form['correios_webservices']['nid'] = array('#type' => 'hidden',
+                '#value' => $nid,
+            );
+
+            $form['correios_webservices']['uc_correios_webservices_postal_code'] = array(
+                '#type' => 'textfield',
+                '#title' => t('Enter your postal code'),
+                '#size' => 10,
+                '#maxlength' => 8,
+                '#required' => FALSE,
+            );
+
+            $form['correios_webservices']['uc_correios_webservices_get_rate'] = array(
+                '#type' => 'button',
+                '#value' => t('Get Correios Quotes'),
+                '#ahah' => array(
+                    'event' => 'click',
+                    'path' => 'correios_webservices/estimating/quotes',
+                    'wrapper' => 'correios-quotes-estimated',
+                    'effect' => 'fade',
+                    'progress' => array(
+                        'type' => 'bar',
+                        'message' => t('Receiving quotes:'),
+                    ),
+                    '#suffix' => '<br />',
+                ),
+            );
+
+            $form['correios_webservices']['uc_correios_webservices_find_postal_code'] = array(
+                '#value' => l(t('Find my Postal Code'), 'http://www.correios.com.br/servicos/cep/cep_loc_log.cfm', array('attributes' => array('target' => '_blank'))),
+            );
+
+            $form['correios_webservices']['estimated_cost'] = array('#type' => 'markup',
+                '#value' => '<div id="correios-quotes-estimated"></div>',
+                '#prefix' => '<br /><br />',
+            );
+        }
+    }
 }
 
-// Übercart Hooks                                                             *
+// Übercart Hooks
 
 /**
  * Implementation of Ubercart's hook_shipping_type().
  */
 function uc_correios_webservices_shipping_type() {
-  $weight = variable_get('uc_quote_type_weight', array('small_package' => 0));
+    $weight = variable_get('uc_quote_type_weight', array('small_package' => 0));
 
-  $types = array();
-  $types['small_package'] = array(
-    'id' => 'small_package',
-    'title' => t('Small packages'),
-    'weight' => $weight['small_package'],
-  );
+    $types = array();
+    $types['small_package'] = array(
+        'id' => 'small_package',
+        'title' => t('Small packages'),
+        'weight' => $weight['small_package'],
+    );
 
-  return $types;
+    return $types;
 }
 
 /**
  * Implementation of Übercart's hook_shipping_method().
  */
 function uc_correios_webservices_shipping_method() {
-  $methods = array();
+    $methods = array();
 
-  $enabled = variable_get('uc_quote_enabled', array('correios_webservices' => TRUE));
-  $weight = variable_get('uc_quote_method_weight', array('correios_webservices' => 0));
-  $methods['correios_webservices'] = array(
-    'id' => 'correios_webservices',
-    'module' => 'uc_correios_webservices',
-    'title' => t('Correios Quotes'),
-    'quote' => array(
-      'type' => 'small_package',
-      'callback' => 'uc_correios_webservices_quote',
-      'accessorials' => _uc_correios_webservices_without_contract_services(),
-    ),
-    'weight' => $weight['correios_webservices'],
-    'enabled' => $enabled['correios_webservices'],
-  );
+    $enabled = variable_get('uc_quote_enabled', array('correios_webservices' => TRUE));
+    $weight = variable_get('uc_quote_method_weight', array('correios_webservices' => 0));
+    $methods['correios_webservices'] = array(
+        'id' => 'correios_webservices',
+        'module' => 'uc_correios_webservices',
+        'title' => t('Correios Quotes'),
+        'quote' => array(
+            'type' => 'small_package',
+            'callback' => 'uc_correios_webservices_quote',
+            'accessorials' => _uc_correios_webservices_without_contract_services(),
+        ),
+        'weight' => $weight['correios_webservices'],
+        'enabled' => $enabled['correios_webservices'],
+    );
 
-  return $methods;
+    return $methods;
 }
 
-
-// Menu Callbacks                                                             *
+// Menu Callbacks
 
 /**
  * Configure the store default shipping rate.
@@ -211,7 +209,7 @@ function uc_correios_webservices_admin_settings() {
         ),
         '#required' => TRUE
     );
-    
+
     $form['uc_correios_webservices_general']['uc_correios_webservices_without_contract_services'] = array(
         '#type' => 'checkboxes',
         '#title' => t('Services'),
@@ -254,7 +252,7 @@ function uc_correios_webservices_admin_settings() {
 
     $form['uc_correios_webservices_general']['uc_correios_webservices_display_time_estimate'] = array(
         '#type' => 'checkbox',
-        '#title'=> t('Show shipping time estimate'),
+        '#title' => t('Show shipping time estimate'),
         '#description' => t('The shipping time estimate will be displayed when avaliable.'),
         '#default_value' => variable_get('uc_correios_webservices_display_time_estimate', FALSE)
     );
@@ -263,7 +261,7 @@ function uc_correios_webservices_admin_settings() {
         '#type' => 'checkbox',
         '#title' => t('Send order total price as "declared value"'),
         '#description' => t('The total order price will be sent as "declared value" when supported by webservice, this option increases the shipping cost.'),
-        '#default_value'  => variable_get('uc_correios_webservices_send_declared_value', FALSE)
+        '#default_value' => variable_get('uc_correios_webservices_send_declared_value', FALSE)
     );
 
     $form['uc_correios_webservices_pac'] = array(
@@ -327,8 +325,7 @@ function uc_correios_webservices_admin_settings() {
     return system_settings_form($form);
 }
 
-
-// Module Functions                                                           *
+// Module Functions
 
 /**
  * List of delivery services by Correios
@@ -344,52 +341,50 @@ function _uc_correios_webservices_without_contract_services() {
     );
 }
 
-
-
 /**
  * Return a formated URL for default service engine and selected kind of service.
  */
 function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $cep_origem = '', $valor_declarado = 0) {
 
-  $url = '';
+    $url = '';
 
-  $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
+    $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
 
-  switch ($default_engine) {
-    case '1':
-      // Webservice URL
-      $url = "http://frete.w21studio.com/calFrete.xml";
+    switch ($default_engine) {
+        case '1':
+            // Webservice URL
+            $url = "http://frete.w21studio.com/calFrete.xml";
 
-      // Variáveis na URL
-      $url .= "?cep=". $cep_destino;
-      $url .= "&cod=". variable_get('uc_correios_webservices_w21studio_token', '');
-      $url .= "&peso=". $peso;
-      $url .= "&comprimento=". variable_get('uc_correios_webservices_pac_length', 16);
-      $url .= "&largura=". variable_get('uc_correios_webservices_pac_depth', 11);
-      $url .= "&altura=". variable_get('uc_correios_webservices_pac_height', 2);
-      $url .= "&servico=". $servico;
-      break;
-    case '0':
-    default:
-      // URL do webservice
-      $url = "http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx";
+            // Variáveis na URL
+            $url .= "?cep=" . $cep_destino;
+            $url .= "&cod=" . variable_get('uc_correios_webservices_w21studio_token', '');
+            $url .= "&peso=" . $peso;
+            $url .= "&comprimento=" . variable_get('uc_correios_webservices_pac_length', 16);
+            $url .= "&largura=" . variable_get('uc_correios_webservices_pac_depth', 11);
+            $url .= "&altura=" . variable_get('uc_correios_webservices_pac_height', 2);
+            $url .= "&servico=" . $servico;
+            break;
+        case '0':
+        default:
+            // URL do webservice
+            $url = "http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx";
 
-      // Variáveis na URL
-      $url .= "?StrRetorno=xml";
-      $url .= "&nCdServico=" . $servico;
-      $url .= "&nVlPeso=" . $peso;
-      $url .= "&sCepOrigem=" . $cep_origem;
-      $url .= "&sCepDestino=" . $cep_destino;
-      $url .= "&nCdFormato=1";
-      $url .= "&sCdMaoPropria=N";
-      $url .= "&sCdAvisoRecebimento=N";
-      $url .= "&nVlValorDeclarado=".  $valor_declarado;
-      $url .= "&nVlComprimento=". variable_get('uc_correios_webservices_pac_length', 16);
-      $url .= "&nVlLargura=". variable_get('uc_correios_webservices_pac_depth', 11);
-      $url .= "&nVlAltura=". variable_get('uc_correios_webservices_pac_height', 2);
-  }
+            // Variáveis na URL
+            $url .= "?StrRetorno=xml";
+            $url .= "&nCdServico=" . $servico;
+            $url .= "&nVlPeso=" . $peso;
+            $url .= "&sCepOrigem=" . $cep_origem;
+            $url .= "&sCepDestino=" . $cep_destino;
+            $url .= "&nCdFormato=1";
+            $url .= "&sCdMaoPropria=N";
+            $url .= "&sCdAvisoRecebimento=N";
+            $url .= "&nVlValorDeclarado=" . $valor_declarado;
+            $url .= "&nVlComprimento=" . variable_get('uc_correios_webservices_pac_length', 16);
+            $url .= "&nVlLargura=" . variable_get('uc_correios_webservices_pac_depth', 11);
+            $url .= "&nVlAltura=" . variable_get('uc_correios_webservices_pac_height', 2);
+    }
 
-  return $url;
+    return $url;
 }
 
 /**
@@ -404,51 +399,48 @@ function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $ce
  */
 function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
 
-  $tries = 0;
+    $tries = 0;
 
-  if (variable_get('uc_correios_webservices_curl_enabled', FALSE)) {
+    if (variable_get('uc_correios_webservices_curl_enabled', FALSE)) {
 
-    if (function_exists('curl_exec')) {
+        if (function_exists('curl_exec')) {
 
-      $result = new stdClass();
+            $result = new stdClass();
 
-      $options = array(
-        CURLOPT_RETURNTRANSFER => TRUE,     // return web page
-        CURLOPT_HEADER         => FALSE,    // don't return headers
-        CURLOPT_FOLLOWLOCATION => TRUE,     // follow redirects
-        CURLOPT_ENCODING       => "",       // handle all encodings
-        // CURLOPT_USERAGENT      => "spider", // who am i
-        CURLOPT_AUTOREFERER    => TRUE,     // set referer on redirect
-        CURLOPT_CONNECTTIMEOUT => 30,      // timeout on connect
-        CURLOPT_TIMEOUT        => 30,      // timeout on response
-        CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
-      );
+            $options = array(
+                CURLOPT_RETURNTRANSFER => TRUE, // return web page
+                CURLOPT_HEADER => FALSE, // don't return headers
+                CURLOPT_FOLLOWLOCATION => TRUE, // follow redirects
+                CURLOPT_ENCODING => "", // handle all encodings
+                // CURLOPT_USERAGENT      => "spider", // who am i
+                CURLOPT_AUTOREFERER => TRUE, // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 30, // timeout on connect
+                CURLOPT_TIMEOUT => 30, // timeout on response
+                CURLOPT_MAXREDIRS => 10, // stop after 10 redirects
+            );
 
-      $ch = curl_init( $url );
-      curl_setopt_array( $ch, $options );
-      $xml = htmlspecialchars(curl_exec( $ch ));
-      $result->data = htmlspecialchars_decode($xml, ENT_QUOTES);
-      $result->data = html_entity_decode($result->data); // utf8
+            $ch = curl_init($url);
+            curl_setopt_array($ch, $options);
+            $xml = htmlspecialchars(curl_exec($ch));
+            $result->data = htmlspecialchars_decode($xml, ENT_QUOTES);
+            $result->data = html_entity_decode($result->data); // utf8
 
-      $err = curl_errno( $ch );
-      $result->error = curl_error( $ch );
-      $result->headers = curl_getinfo( $ch );
-      curl_close( $ch );
+            $err = curl_errno($ch);
+            $result->error = curl_error($ch);
+            $result->headers = curl_getinfo($ch);
+            curl_close($ch);
 
-      if ($err != 0 && $conexoes < $tries ) {
-        uc_correios_webservices_shipping_quote($url, ++$conexoes);
-      }
-      else {
-        return $result;
-      }
+            if ($err != 0 && $conexoes < $tries) {
+                uc_correios_webservices_shipping_quote($url, ++$conexoes);
+            } else {
+                return $result;
+            }
+        } else {
+            drupal_set_message(t('Correios Quotes: cURL lib support is missing.'), 'error');
+        }
+    } else {
+        return drupal_http_request($url);
     }
-    else {
-      drupal_set_message(t('Correios Quotes: cURL lib support is missing.'), 'error');
-    }
-  }
-  else {
-    return drupal_http_request($url);
-  }
 }
 
 /**
@@ -462,152 +454,146 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
  */
 function uc_correios_webservices_quote($products, $details) {
 
-  $xml = '';
-  $quotes = array();
-  $method = uc_correios_webservices_shipping_method();
-  $weight_unit = variable_get('uc_weight_unit', NULL);
+    $xml = '';
+    $quotes = array();
+    $method = uc_correios_webservices_shipping_method();
+    $weight_unit = variable_get('uc_weight_unit', NULL);
 
-  $addresses = array((array)variable_get('uc_quote_store_default_address', new stdClass()));
-  $orig = (object)$addresses[0];
-  // Origin Postal code (CEP) - Warehouse postal code
-  $cep_origem = $orig->postal_code;
-  //$ceporigem = variable_get('uc_store_postal_code', NULL); // Origin Postal code (CEP)
+    $addresses = array((array) variable_get('uc_quote_store_default_address', new stdClass()));
+    $orig = (object) $addresses[0];
+    // Origin Postal code (CEP) - Warehouse postal code
+    $cep_origem = $orig->postal_code;
+    //$ceporigem = variable_get('uc_store_postal_code', NULL); // Origin Postal code (CEP)
 
-  $shipment = new stdClass();
+    $shipment = new stdClass();
 
-  // Use uc_cart_get_contents to get cart items, because $products array won't work
-  $items = uc_cart_get_contents(uc_cart_get_id(), 'rebuild');
+    // Use uc_cart_get_contents to get cart items, because $products array won't work
+    $items = uc_cart_get_contents(uc_cart_get_id(), 'rebuild');
 
-  foreach ($products as $product) {
-    $node = node_load($product->nid);
-    // Calcula o peso dos produtos de acordo com a unidade de peso utilizada
-    $shipment->weight += $product->weight * $product->qty * uc_weight_conversion($node->weight_units, 'kg');
-    // Calcula o valor dos produtos de acordo com a quantidade
-    $shipment->price += $product->price * $product->qty;
-  }
-
-  $cep_destino = (object)$details;
-  $cep_destino = check_plain(preg_replace('/[[:^digit:]]/', '', $cep_destino->postal_code));
-  $valor_declarado = (variable_get('uc_correios_webservices_send_declared_value', FALSE)) ? number_format($shipment->price, 2, ',', '.') : 0;
-  $peso_final = $shipment->weight;
-
-  $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
-
-  foreach (array_keys(array_filter(variable_get('uc_correios_webservices_services', array()))) as $correios_service) {
-
-    if ($default_engine == 1) {
-      switch ($correios_service) {
-        case '41106':
-          $fetch_service = 2;
-          break;
-        case '40010':
-          $fetch_service = 1;
-          break;
-      }
-    }
-    else
-      $fetch_service = $correios_service;
-
-    $service_url = _uc_correios_webservices_service_url($peso_final, $fetch_service, $cep_destino, $cep_origem, $valor_declarado);
-
-    $resp = uc_correios_webservices_shipping_quote($service_url,  1);
-
-    $xml = @simplexml_load_string(trim($resp->data));
-
-    if (user_access('configure quotes') && variable_get('uc_quote_display_debug', FALSE)) {
-      $quotes[$correios_service]['debug'] .= ' <br /><br /> '. htmlentities((string)$resp->data);
+    foreach ($products as $product) {
+        $node = node_load($product->nid);
+        // Calcula o peso dos produtos de acordo com a unidade de peso utilizada
+        $shipment->weight += $product->weight * $product->qty * uc_weight_conversion($node->weight_units, 'kg');
+        // Calcula o valor dos produtos de acordo com a quantidade
+        $shipment->price += $product->price * $product->qty;
     }
 
-    if (!is_object($xml) || !$xml) {
-      $quotes[$correios_service]['error'] = t('Error getting correios shipping quotes.');
+    $cep_destino = (object) $details;
+    $cep_destino = check_plain(preg_replace('/[[:^digit:]]/', '', $cep_destino->postal_code));
+    $valor_declarado = (variable_get('uc_correios_webservices_send_declared_value', FALSE)) ? number_format($shipment->price, 2, ',', '.') : 0;
+    $peso_final = $shipment->weight;
+
+    $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
+
+    foreach (array_keys(array_filter(variable_get('uc_correios_webservices_services', array()))) as $correios_service) {
+
+        if ($default_engine == 1) {
+            switch ($correios_service) {
+                case '41106':
+                    $fetch_service = 2;
+                    break;
+                case '40010':
+                    $fetch_service = 1;
+                    break;
+            }
+        }
+        else
+            $fetch_service = $correios_service;
+
+        $service_url = _uc_correios_webservices_service_url($peso_final, $fetch_service, $cep_destino, $cep_origem, $valor_declarado);
+
+        $resp = uc_correios_webservices_shipping_quote($service_url, 1);
+
+        $xml = @simplexml_load_string(trim($resp->data));
+
+        if (user_access('configure quotes') && variable_get('uc_quote_display_debug', FALSE)) {
+            $quotes[$correios_service]['debug'] .= ' <br /><br /> ' . htmlentities((string) $resp->data);
+        }
+
+        if (!is_object($xml) || !$xml) {
+            $quotes[$correios_service]['error'] = t('Error getting correios shipping quotes.');
+        } else {
+
+            $error_msg = $error_no = '';
+
+            switch ($default_engine) {
+                case '0':
+                    $error_msg = check_plain((string) $xml->cServico->MsgErro);
+                    $error_no = check_plain((string) $xml->cServico->Erro);
+                    $preco_postal = str_replace(',', '.', check_plain($xml->cServico->Valor));
+                    $prazo_entrega = check_plain($xml->cServico->PrazoEntrega);
+                    $prazo_entrega = format_plural($prazo_entrega, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)');
+                    break;
+                case '1':
+                    $error_msg = check_plain($xml->status);
+                    $preco_postal_pac = (int) check_plain($xml->valor_pac);
+                    $preco_postal_sedex = (int) check_plain($xml->valor_sedex);
+                    if ($preco_postal_pac > 0)
+                        $preco_postal = check_plain($xml->valor_pac);
+                    if ($preco_postal_sedex > 0)
+                        $preco_postal = check_plain($xml->valor_sedex);
+                    $prazo_entrega = '';
+                    break;
+            }
+
+            if (empty($error_msg) || $error_no == 0 || $error_msg == 'OK') {
+                $quotes[$correios_service]['rate'] = $preco_postal;
+                $quotes[$correios_service]['estimated_delivery'] = $prazo_entrega;
+            } else {
+                $quotes[$correios_service]['error'] .= '   ' . $error_msg . ' (' . t('error:') . ' ' . $error_no . ')';
+            }
+        }
     }
-    else {
 
-      $error_msg = $error_no = '';
+    foreach ($quotes as $key => $quote) {
+        if (isset($quote['rate'])) {
+            $quotes[$key]['format'] = uc_currency_format($quote['rate']);
+        }
 
-      switch ($default_engine) {
-        case '0':
-          $error_msg = check_plain((string) $xml->cServico->MsgErro);
-          $error_no = check_plain((string) $xml->cServico->Erro);
-          $preco_postal = str_replace(',', '.', check_plain($xml->cServico->Valor));
-          $prazo_entrega = check_plain($xml->cServico->PrazoEntrega);
-          $prazo_entrega = format_plural($prazo_entrega, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)');
-          break;
-        case '1':
-          $error_msg = check_plain($xml->status);
-          $preco_postal_pac = (int) check_plain($xml->valor_pac);
-          $preco_postal_sedex = (int) check_plain($xml->valor_sedex);
-          if ($preco_postal_pac > 0)
-            $preco_postal = check_plain($xml->valor_pac);
-          if ($preco_postal_sedex > 0)
-            $preco_postal = check_plain($xml->valor_sedex);
-          $prazo_entrega = '';
-          break;
-
-      }
-
-      if (empty($error_msg) || $error_no == 0 || $error_msg == 'OK') {
-        $quotes[$correios_service]['rate'] = $preco_postal;
-        $quotes[$correios_service]['estimated_delivery'] = $prazo_entrega;
-      }
-      else {
-        $quotes[$correios_service]['error'] .= '   '. $error_msg .' ('. t('error:') .' '. $error_no .')';
-      }
-    }
-  }
-
-  foreach ($quotes as $key => $quote) {
-    if (isset($quote['rate'])) {
-      $quotes[$key]['format'] = uc_currency_format($quote['rate']);
+        if (isset($quote['error']) || !empty($quote['error'])) {
+            $quotes[$key]['error'] = $quote['error'];
+            unset($quotes[$key]['rate']);
+            unset($quotes[$key]['format']);
+        }
+        $quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
+        $quotes[$key]['option_label'] .= t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
+        if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE)
+            $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . $quote['estimated_delivery'] . '</span>';
     }
 
-    if (isset($quote['error']) || !empty($quote['error'])) {
-      $quotes[$key]['error'] = $quote['error'];
-      unset($quotes[$key]['rate']);
-      unset($quotes[$key]['format']);
-    }
-    $quotes[$key]['option_label'] = '<img class="correios_logo" src="'. base_path() . drupal_get_path('module', 'uc_correios_webservices') .'/images/correios.gif" /> ';
-    $quotes[$key]['option_label'] .= t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-    if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE)
-      $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">'. $quote['estimated_delivery'] .'</span>';
-  }
+    uasort($quotes, 'uc_quote_price_sort');
 
-  uasort($quotes, 'uc_quote_price_sort');
-
-  return $quotes;
+    return $quotes;
 }
-
 
 function uc_correios_webservices_estimating_quotes() {
 
-  $output = '<br /><label class="option">';
-  $output .= variable_get('uc_correios_webservices_estimating_by_product_message', '');
-  $output .= '</label><br />';
-
-  $node = node_load($_POST['nid']);
-  $product = new stdClass();
-  $product->nid = $_POST['nid'];
-  $product->qty = $_POST['qty'];
-  $product->price = $node->sell_price;
-  $product->weight = $node->weight;
-  
-  $correios_webservices = uc_correios_webservices_quote(array($product), array('postal_code' => $_POST['uc_correios_webservices_postal_code'], 'country' => $node->shipping_address->country, 'zone' => ''));
-
-  foreach ($correios_webservices as $quote) {
-    $output .= '<br /><label class="option">';
-    $output .= $quote['option_label'] .' ';
-    if (isset($quote['error'])) {     
-      $output .= $quote['error'];
-    }
-    else {
-      if (isset($quote['format']) && isset($quote['format'])) {
-        $output .= $quote['format'];
-      }
-    }
+    $output = '<br /><label class="option">';
+    $output .= variable_get('uc_correios_webservices_estimating_by_product_message', '');
     $output .= '</label><br />';
-  }
 
-  drupal_json(array('status' => TRUE, 'data' => $output));
-  exit();
+    $node = node_load($_POST['nid']);
+    $product = new stdClass();
+    $product->nid = $_POST['nid'];
+    $product->qty = $_POST['qty'];
+    $product->price = $node->sell_price;
+    $product->weight = $node->weight;
 
+    $correios_webservices = uc_correios_webservices_quote(array($product), array('postal_code' => $_POST['uc_correios_webservices_postal_code'], 'country' => $node->shipping_address->country, 'zone' => ''));
+
+    foreach ($correios_webservices as $quote) {
+        $output .= '<br /><label class="option">';
+        $output .= $quote['option_label'] . ' ';
+        if (isset($quote['error'])) {
+            $output .= $quote['error'];
+        } else {
+            if (isset($quote['format']) && isset($quote['format'])) {
+                $output .= $quote['format'];
+            }
+        }
+        $output .= '</label><br />';
+    }
+
+    drupal_json(array('status' => TRUE, 'data' => $output));
+    exit();
 }
