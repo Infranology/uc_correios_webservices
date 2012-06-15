@@ -1,4 +1,4 @@
-name = UC Correios Webservices
+name = Correios Webservices
 description = Module to calculate shipping costs based on Brazil Correios Webservice integration.
 dependencies[] = uc_quote
 package = Ubercart - fulfillment
