@@ -344,6 +344,24 @@ function _uc_correios_webservices_without_contract_services() {
 }
 
 /**
+ *
+ * @param type $length
+ *    Length of product
+ * @param type $qty
+ *    Quantity of products
+ * @param type $unit
+ *    Measuring unit
+ * @return
+ *    Total length in cm
+ */
+function uc_correios_webservices_length_convert($length, $qty, $unit) {
+    $total = $length * $qty * uc_length_conversion($unit, 'cm');
+    
+    return $total;    
+}
+
+
+/**
  * Return a formated URL for default service engine and selected kind of service.
  */
 
