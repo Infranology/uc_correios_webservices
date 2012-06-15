@@ -417,6 +417,55 @@ function uc_correios_webservice_declared_valeu($value) {
 }
 
 /**
+ *
+ * @param type $products
+ *    Array with cart products
+ * @return array
+ *    Return array with products information
+ */
+
+function uc_correios_webservices_products($products) {
+    $height = '';
+    $width  = '';
+    $length = '';
+    $weight = '';
+    $price  = '';
+
+    foreach($products as $product) :
+        
+        $qty          = $product->qty;
+        $weight_units = $product->weight_units;
+        $length_units = $product->length_units;
+        
+        // product weight
+        $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units);
+        $width  += uc_correios_webservices_length_convert($product->width,  $qty, $length_units);
+        $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units);
+        
+        // product weight
+        $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
+
+        // product price
+        $price  += $product->price * $product->qty;
+        
+    endforeach;
+    
+    // Rounding up values
+    $height = ceil($height);
+    $width  = ceil($width);
+    $length = ceil($length);
+    $weight = ceil($weight);
+    
+    return array(
+        'height' => $height,
+        'width'  => $width,
+        'length' => $length,
+        'weight' => $weight,
+        'price'  => $price,
+    );
+}
+
+/**
  * Return a formated URL for default service engine and selected kind of service.
  */
 
