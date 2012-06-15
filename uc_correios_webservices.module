@@ -467,6 +467,16 @@ function uc_correios_webservices_products($products) {
 }
 
 /**
+ *
+ * @return type 
+ */
+function uc_correios_webservices_origin_postal_code() {
+    $code = variable_get('uc_quote_store_default_address', '');
+    
+    return $code->postal_code;
+}
+
+/**
  * Return a formated URL for default service engine and selected kind of service.
  */
 
@@ -589,7 +599,7 @@ function uc_correios_webservices_quote($products, $details) {
     $cod_empresa     = variable_get('uc_correios_webservices_username', '');
     $senha           = variable_get('uc_correios_webservices_password', '');
     
-    $cep_origem      = '';
+    $cep_origem      = uc_correios_webservices_origin_postal_code();
     $cep_destino     = '';
     
     $altura          = $product['height'];
@@ -604,7 +614,7 @@ function uc_correios_webservices_quote($products, $details) {
     
     $retorno         = 'object';
     
-    //myTrace(array($cod_empresa, uc_correios_webservice_declared_valeu($product['price'])));
+    //myTrace(array(uc_correios_webservices_store_address()));
     
 /*
     $xml = '';
