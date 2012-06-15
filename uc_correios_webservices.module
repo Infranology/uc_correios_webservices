@@ -402,11 +402,12 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
  * @return
  *    Declared value
  */
-function uc_correios_webservice_declared_valeu($value) {
+function uc_correios_webservice_declared_value($value) {
     $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
     
     switch ($key) :
         case 1 :
+            $value = number_format($value, 2, ',', '.');
             return $value;
             break;
         default :
@@ -599,11 +600,11 @@ function uc_correios_webservices_quote($products, $details) {
     
     $servico         = '';
 
-    $valor_declarado = uc_correios_webservice_declared_valeu($product['price']);
+    $valor_declarado = uc_correios_webservice_declared_value($product['price']);
     
     $retorno         = 'object';
     
-    //myTrace(array($cod_empresa, $senha));
+    //myTrace(array($cod_empresa, uc_correios_webservice_declared_valeu($product['price'])));
     
 /*
     $xml = '';
