@@ -360,6 +360,24 @@ function uc_correios_webservices_length_convert($length, $qty, $unit) {
     return $total;    
 }
 
+/**
+ *
+ * @param type $weight
+ *    Weigth of product
+ * @param type $qty
+ *    Quantity of products
+ * @param type $unit
+ *    Measuring unit
+ * @return 
+ *    Total weight in kg
+ */
+
+function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
+    $total = $weight * $qty * uc_weight_conversion($unit, 'kg');
+    
+    return $total;
+}
+
 
 /**
  * Return a formated URL for default service engine and selected kind of service.
