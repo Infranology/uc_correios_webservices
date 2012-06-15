@@ -17,7 +17,7 @@ function uc_correios_webservices_menu() {
     $items = array();
 
     $items['admin/store/settings/quotes/methods/correios_webservices'] = array(
-      'title' => 'Correios Quotes',
+      'title' => 'Correios Webservices',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('uc_correios_webservices_admin_settings'),
       'access arguments' => array('configure quotes'),
@@ -25,7 +25,7 @@ function uc_correios_webservices_menu() {
     );
 
     $items['correios_webservices/estimating/quotes'] = array(
-      'page callback' => 'uc_correios_webservices_estimating_quotes', // AHAH callback function
+      'page callback' => 'uc_correios_webservices_estimating_quotes',
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
     );
