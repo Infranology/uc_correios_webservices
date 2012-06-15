@@ -21,13 +21,13 @@ function uc_correios_webservices_menu() {
         'page callback' => 'drupal_get_form',
         'page arguments' => array('uc_correios_webservices_admin_settings'),
         'access arguments' => array('configure quotes'),
-        'type' => MENU_LOCAL_TASK,
+        'type' => MENU_LOCAL_TASK
     );
 
     $items['correios_webservices/estimating/quotes'] = array(
         'page callback' => 'uc_correios_webservices_estimating_quotes',
         'access arguments' => array('access content'),
-        'type' => MENU_CALLBACK,
+        'type' => MENU_CALLBACK
     );
 
     return $items;
@@ -70,11 +70,12 @@ function uc_correios_webservices_ca_predicate() {
                     '#title' => t('Fetch a shipping quote'),
                     '#argument_map' => array(
                         'order' => 'order',
-                        'method' => 'method',
-                    ),
-                ),
-            ),
-            ));
+                        'method' => 'method'
+                    )
+                )
+            )
+        )
+    );
     return $predicates;
 }
 
@@ -97,11 +98,12 @@ function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
                 '#type' => 'fieldset',
                 '#title' => t('Estimating shipping cost'),
                 '#collapsible' => FALSE,
-                '#collapsed' => FALSE,
+                '#collapsed' => FALSE
             );
 
-            $form['correios_webservices']['nid'] = array('#type' => 'hidden',
-                '#value' => $nid,
+            $form['correios_webservices']['nid'] = array(
+                '#type' => 'hidden',
+                '#value' => $nid
             );
 
             $form['correios_webservices']['uc_correios_webservices_postal_code'] = array(
@@ -109,7 +111,7 @@ function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
                 '#title' => t('Enter your postal code'),
                 '#size' => 10,
                 '#maxlength' => 8,
-                '#required' => FALSE,
+                '#required' => FALSE
             );
 
             $form['correios_webservices']['uc_correios_webservices_get_rate'] = array(
@@ -122,9 +124,9 @@ function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
                     'effect' => 'fade',
                     'progress' => array(
                         'type' => 'bar',
-                        'message' => t('Receiving quotes:'),
+                        'message' => t('Receiving quotes:')
                     ),
-                    '#suffix' => '<br />',
+                    '#suffix' => '<br />'
                 ),
             );
 
@@ -134,7 +136,7 @@ function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
 
             $form['correios_webservices']['estimated_cost'] = array('#type' => 'markup',
                 '#value' => '<div id="correios-quotes-estimated"></div>',
-                '#prefix' => '<br /><br />',
+                '#prefix' => '<br /><br />'
             );
         }
     }
@@ -152,7 +154,7 @@ function uc_correios_webservices_shipping_type() {
     $types['small_package'] = array(
         'id' => 'small_package',
         'title' => t('Small packages'),
-        'weight' => $weight['small_package'],
+        'weight' => $weight['small_package']
     );
 
     return $types;
@@ -173,10 +175,10 @@ function uc_correios_webservices_shipping_method() {
         'quote' => array(
             'type' => 'small_package',
             'callback' => 'uc_correios_webservices_quote',
-            'accessorials' => _uc_correios_webservices_without_contract_services(),
+            'accessorials' => _uc_correios_webservices_without_contract_services()
         ),
         'weight' => $weight['correios_webservices'],
-        'enabled' => $enabled['correios_webservices'],
+        'enabled' => $enabled['correios_webservices']
     );
 
     return $methods;
@@ -278,7 +280,7 @@ function uc_correios_webservices_admin_settings() {
         '#maxlength' => 8,
         '#description' => t("Package length range 16 to 60 centimeters."),
         '#default_value' => variable_get('uc_correios_webservices_pac_length', 16),
-        '#required' => TRUE,
+        '#required' => TRUE
     );
 
     $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_height'] = array(
@@ -288,7 +290,7 @@ function uc_correios_webservices_admin_settings() {
         '#maxlength' => 8,
         '#description' => t("Package height range 2 to 60 centimeters."),
         '#default_value' => variable_get('uc_correios_webservices_pac_height', 2),
-        '#required' => TRUE,
+        '#required' => TRUE
     );
 
     $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_depth'] = array(
@@ -298,7 +300,7 @@ function uc_correios_webservices_admin_settings() {
         '#maxlength' => 8,
         '#description' => t("Package depth range 5 to 60 centimeters."),
         '#default_value' => variable_get('uc_correios_webservices_pac_depth', 11),
-        '#required' => TRUE,
+        '#required' => TRUE
     );
 
     $form['uc_correios_webservices_estimanting_quotes_by_product'] = array(
@@ -319,7 +321,7 @@ function uc_correios_webservices_admin_settings() {
         '#type' => 'textarea',
         '#title' => t('Message'),
         '#description' => t('A custom message displayed when a estimative shipping cost was received on product page.'),
-        '#default_value' => variable_get('uc_correios_webservices_estimating_by_product_message', t('The shipping cost estimate bellow refers only to this item by buying more items the shipping cost may be proportionately cheaper or even free. <br /> <strong> See the terms of the store and the minimum value for orders. </ strong>')),
+        '#default_value' => variable_get('uc_correios_webservices_estimating_by_product_message', t('The shipping cost estimate bellow refers only to this item by buying more items the shipping cost may be proportionately cheaper or even free. <br /> <strong> See the terms of the store and the minimum value for orders. </ strong>'))
     );
 
     return system_settings_form($form);
@@ -344,8 +346,9 @@ function _uc_correios_webservices_without_contract_services() {
 /**
  * Return a formated URL for default service engine and selected kind of service.
  */
-function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $cep_origem = '', $valor_declarado = 0) {
 
+function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $cep_origem = '', $valor_declarado = 0) {
+/*
     $url = '';
 
     $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
@@ -385,6 +388,8 @@ function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $ce
     }
 
     return $url;
+
+*/
 }
 
 /**
@@ -398,7 +403,7 @@ function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $ce
  * @return array
  */
 function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
-
+/*
     $tries = 0;
 
     if (variable_get('uc_correios_webservices_curl_enabled', FALSE)) {
@@ -441,6 +446,8 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
     } else {
         return drupal_http_request($url);
     }
+
+*/
 }
 
 /**
@@ -453,7 +460,7 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
  *    object containing rate, error, and debugging information
  */
 function uc_correios_webservices_quote($products, $details) {
-
+/*
     $xml = '';
     $quotes = array();
     $method = uc_correios_webservices_shipping_method();
@@ -564,6 +571,8 @@ function uc_correios_webservices_quote($products, $details) {
     uasort($quotes, 'uc_quote_price_sort');
 
     return $quotes;
+
+*/
 }
 
 function uc_correios_webservices_estimating_quotes() {
