@@ -8,6 +8,9 @@
  *
  */
 
+// API
+include('api/correioswebservice.php');
+
 // Drupal Hooks
 
 /**
@@ -175,7 +178,7 @@ function uc_correios_webservices_shipping_method() {
         'quote' => array(
             'type' => 'small_package',
             'callback' => 'uc_correios_webservices_quote',
-            'accessorials' => _uc_correios_webservices_without_contract_services()
+            'accessorials' => array_values(uc_correios_webservices_services())
         ),
         'weight' => $weight['correios_webservices'],
         'enabled' => $enabled['correios_webservices']
@@ -216,8 +219,8 @@ function uc_correios_webservices_admin_settings() {
         '#type' => 'checkboxes',
         '#title' => t('Services'),
         '#description' => t('Select the kinds of shipping services will be avaliable for costumers.'),
-        '#default_value' => variable_get('uc_correios_webservices_without_contract_services', _uc_correios_webservices_without_contract_services()),
-        '#options' => _uc_correios_webservices_without_contract_services()
+        '#default_value' => variable_get('uc_correios_webservices_without_contract_services', uc_correios_webservices_without_contract_services()),
+        '#options' => uc_correios_webservices_without_contract_services()
     );
 
     $form['uc_correios_webservices_general']['uc_correios_webservices_username'] = array(
@@ -347,17 +350,39 @@ function myTrace($msg) {
 }
 
 /**
- * List of delivery services by Correios
+ * List of delivery services by Correios without contract
  *
  * @return array
  */
-function _uc_correios_webservices_without_contract_services() {
+function uc_correios_webservices_without_contract_services() {
     return array(
         '41106' => t('PAC'),
         '40010' => t('SEDEX'),
         '40215' => t('SEDEX 10'),
         '40290' => t('SEDEX Hoje')
     );
+}
+
+/**
+ * List the methods of delivery selected
+ *
+ * @return array
+ */
+function uc_correios_webservices_services() {
+    $login = variable_get('uc_correios_webservices_username', NULL);
+    $without_login = variable_get('uc_correios_webservices_without_contract_services', uc_correios_webservices_without_contract_services());
+    $with_login = variable_get('uc_correios_webservices_with_contract_services', '');
+    
+    
+    if ($login != NULL) {
+        return $with_login;
+    }
+    else {
+        return $without_login;
+    }
+        
+    
+    
 }
 
 /**
@@ -512,16 +537,47 @@ function uc_correios_webservices_quote($products, $details) {
     $altura          = $product['height'];
     $largura         = $product['width'];
     $comprimento     = $product['length'];
+    $diametro        = 0;
 
     $peso            = $product['weight'];
 
-    $servico         = '';
+    $services        = array_values(uc_correios_webservices_services());
 
     $valor_declarado = uc_correios_webservice_declared_value($product['price']);
 
     $retorno         = 'object';
 
-    //myTrace(array($cep_destino));
+    //myTrace(array(uc_correios_webservices_services()));
+    $quotes = array();
+    
+    
+    foreach ($services as $key => $service) {
+        
+        if ($service != 0) {
+
+            $servico = $service;
+            $method = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $servico, $valor_declarado, $retorno);
+            
+            
+            //$quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
+            $quotes[$key]['option_label'] = $method->Valor;
+            
+            
+            if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE) {
+                $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . $quote['estimated_delivery'] . '</span>';
+            }
+            
+            
+            myTrace(array($quotes, $method));
+        }
+        
+    }
+    
+    uasort($quotes, 'uc_quote_price_sort');
+    
+    return $quotes;
+    
+    
 
 /*
     $xml = '';
