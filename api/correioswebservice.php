@@ -5,7 +5,7 @@
  * Essa função utiliza o cep do remetente fixo dentro da função
  * Você especifica o cep destino e peso
  * o terceiro parametro é como você quer o retorno:
- * 'objeto', 'arrray', 'json'
+ * 'objeto', 'array', 'json'
  *
  * Se você precisar especificar mais variáveis para o PAC fique a vontade para atualizar a função
  * XD divirta-se
@@ -19,14 +19,14 @@ function calculo_frete_correios_api($cod_empresa,
                         $largura,
                         $diametro,
                         $comprimento,
-                        $peso='0.300',
+                        $peso = '0.300',
                         $servico,
-                        $valor_declarado='0', 
+                        $valor_declarado = '0', 
                         $retorno = 'array')
 {
    // TRATA OS CEP'S
-   $cep_destino = eregi_replace("([^0-9])",'',$cep_destino);
-   $cep_origem = eregi_replace("([^0-9])",'',$cep_origem);
+   $cep_destino = preg_replace("([^0-9])",'',$cep_destino);
+   $cep_origem = preg_replace("([^0-9])",'',$cep_origem);
  
    /*
     * TIPOS DE FRETE
@@ -49,7 +49,7 @@ function calculo_frete_correios_api($cod_empresa,
  
    // TORNA EM OBJETO AS VARIAVEIS
    $parms = new stdClass;
-   $parms->nCdServico = $servico;//'41106,40010,40215,40290';// PAC, SEDEX E ESEDEX (TODOS COM CONTRATO) - se vc precisar de mais tipos adicione aqui
+   $parms->nCdServico = $servico; //'41106,40010,40215,40290';// PAC, SEDEX E ESEDEX (TODOS COM CONTRATO) - se vc precisar de mais tipos adicione aqui
    $parms->nCdEmpresa = $cod_empresa;// <- LOGIN DO CADASTRO NO CORREIOS (OPCIONAL)
    $parms->sDsSenha = $senha;// <- SENHA DO CADASTRO NO CORREIOS (OPCIONAL)
    $parms->StrRetorno = 'xml';
