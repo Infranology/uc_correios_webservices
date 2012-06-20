@@ -380,9 +380,6 @@ function uc_correios_webservices_services() {
     else {
         return $without_login;
     }
-        
-    
-    
 }
 
 /**
@@ -550,7 +547,6 @@ function uc_correios_webservices_quote($products, $details) {
     //myTrace(array(uc_correios_webservices_services()));
     $quotes = array();
     
-    
     foreach ($services as $key => $service) {
         
         if ($service != 0) {
@@ -558,22 +554,33 @@ function uc_correios_webservices_quote($products, $details) {
             $servico = $service;
             $method = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $servico, $valor_declarado, $retorno);
             
+            $delivery_price = str_replace(',', '.', htmlentities($method->Valor, ENT_QUOTES));
+            $delivery_date = htmlentities($method->PrazoEntrega, ENT_QUOTES);
             
-            //$quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
-            $quotes[$key]['option_label'] = $method->Valor;
             
             
+            // Rate
+            $quotes[$key]['rate'] = $delivery_price;
+            
+            // Format
+            $quotes[$key]['format'] = uc_currency_format($delivery_price);
+            
+            
+            $quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
+            
+            // Display time estimate in label
             if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE) {
-                $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . $quote['estimated_delivery'] . '</span>';
+                $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
             }
+            
+            // Error
+            //if ()
             
             
             myTrace(array($quotes, $method));
         }
         
     }
-    
-    uasort($quotes, 'uc_quote_price_sort');
     
     return $quotes;
     
