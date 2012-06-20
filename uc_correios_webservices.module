@@ -334,7 +334,7 @@ function uc_correios_webservices_admin_settings() {
  */
 function myTrace($msg) {
     $filename = "/Users/claudiosanches/dev/www/debug.txt";
-    
+
     ob_start(); //Start buffering
     print_r($msg); //print the result
     $output = ob_get_contents(); //get the result from buffer
@@ -373,8 +373,8 @@ function _uc_correios_webservices_without_contract_services() {
  */
 function uc_correios_webservices_length_convert($length, $qty, $unit) {
     $total = $length * $qty * uc_length_conversion($unit, 'cm');
-    
-    return $total;    
+
+    return $total;
 }
 
 /**
@@ -385,13 +385,13 @@ function uc_correios_webservices_length_convert($length, $qty, $unit) {
  *    Quantity of products
  * @param type $unit
  *    Measuring unit
- * @return 
+ * @return
  *    Total weight in kg
  */
 
 function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
     $total = $weight * $qty * uc_weight_conversion($unit, 'kg');
-    
+
     return $total;
 }
 
@@ -404,7 +404,7 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
  */
 function uc_correios_webservice_declared_value($value) {
     $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
-    
+
     switch ($key) :
         case 1 :
             $value = number_format($value, 2, ',', '.');
@@ -414,7 +414,7 @@ function uc_correios_webservice_declared_value($value) {
             return '0';
             break;
     endswitch;
-    
+
 }
 
 /**
@@ -433,30 +433,30 @@ function uc_correios_webservices_products($products) {
     $price  = '';
 
     foreach($products as $product) :
-        
+
         $qty          = $product->qty;
         $weight_units = $product->weight_units;
         $length_units = $product->length_units;
-        
+
         // product weight
         $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units);
         $width  += uc_correios_webservices_length_convert($product->width,  $qty, $length_units);
         $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units);
-        
+
         // product weight
         $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
 
         // product price
         $price  += $product->price * $product->qty;
-        
+
     endforeach;
-    
+
     // Rounding up values
     $height = ceil($height);
     $width  = ceil($width);
     $length = ceil($length);
     $weight = ceil($weight);
-    
+
     return array(
         'height' => $height,
         'width'  => $width,
@@ -468,11 +468,11 @@ function uc_correios_webservices_products($products) {
 
 /**
  *
- * @return type 
+ * @return type
  */
 function uc_correios_webservices_origin_postal_code() {
     $code = variable_get('uc_quote_store_default_address', '');
-    
+
     return $code->postal_code;
 }
 
@@ -480,122 +480,14 @@ function uc_correios_webservices_origin_postal_code() {
  *
  * @param type $details
  *   Get shipping details
- * @return type 
+ * @return type
  *   Return user postal code
  */
 function uc_correios_webservices_destiny_postal_code($details) {
-
     $code  = (object) $details;
     $code = check_plain(preg_replace('/[[:^digit:]]/', '', $code->postal_code));
 
     return $code;
-}
-
-/**
- * Return a formated URL for default service engine and selected kind of service.
- */
-
-function _uc_correios_webservices_service_url($peso, $servico, $cep_destino, $cep_origem = '', $valor_declarado = 0) {
-/*
-    $url = '';
-
-    $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
-
-    switch ($default_engine) {
-        case '1':
-            // Webservice URL
-            $url = "http://frete.w21studio.com/calFrete.xml";
-
-            // Variáveis na URL
-            $url .= "?cep=" . $cep_destino;
-            $url .= "&cod=" . variable_get('uc_correios_webservices_w21studio_token', '');
-            $url .= "&peso=" . $peso;
-            $url .= "&comprimento=" . variable_get('uc_correios_webservices_pac_length', 16);
-            $url .= "&largura=" . variable_get('uc_correios_webservices_pac_depth', 11);
-            $url .= "&altura=" . variable_get('uc_correios_webservices_pac_height', 2);
-            $url .= "&servico=" . $servico;
-            break;
-        case '0':
-        default:
-            // URL do webservice
-            $url = "http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx";
-
-            // Variáveis na URL
-            $url .= "?StrRetorno=xml";
-            $url .= "&nCdServico=" . $servico;
-            $url .= "&nVlPeso=" . $peso;
-            $url .= "&sCepOrigem=" . $cep_origem;
-            $url .= "&sCepDestino=" . $cep_destino;
-            $url .= "&nCdFormato=1";
-            $url .= "&sCdMaoPropria=N";
-            $url .= "&sCdAvisoRecebimento=N";
-            $url .= "&nVlValorDeclarado=" . $valor_declarado;
-            $url .= "&nVlComprimento=" . variable_get('uc_correios_webservices_pac_length', 16);
-            $url .= "&nVlLargura=" . variable_get('uc_correios_webservices_pac_depth', 11);
-            $url .= "&nVlAltura=" . variable_get('uc_correios_webservices_pac_height', 2);
-    }
-
-    return $url;
-
-*/
-}
-
-/**
- * uc_correios_webservices_shipping_quote
- *
- * @param mixed $url
- *   URL formatada de acordo com o serviço e webservice padrão
- * @param mixed $conexoes
- *   Número de tentativas de conexão com o site dos Correios
- * @access public
- * @return array
- */
-function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
-/*
-    $tries = 0;
-
-    if (variable_get('uc_correios_webservices_curl_enabled', FALSE)) {
-
-        if (function_exists('curl_exec')) {
-
-            $result = new stdClass();
-
-            $options = array(
-                CURLOPT_RETURNTRANSFER => TRUE, // return web page
-                CURLOPT_HEADER => FALSE, // don't return headers
-                CURLOPT_FOLLOWLOCATION => TRUE, // follow redirects
-                CURLOPT_ENCODING => "", // handle all encodings
-                // CURLOPT_USERAGENT      => "spider", // who am i
-                CURLOPT_AUTOREFERER => TRUE, // set referer on redirect
-                CURLOPT_CONNECTTIMEOUT => 30, // timeout on connect
-                CURLOPT_TIMEOUT => 30, // timeout on response
-                CURLOPT_MAXREDIRS => 10, // stop after 10 redirects
-            );
-
-            $ch = curl_init($url);
-            curl_setopt_array($ch, $options);
-            $xml = htmlspecialchars(curl_exec($ch));
-            $result->data = htmlspecialchars_decode($xml, ENT_QUOTES);
-            $result->data = html_entity_decode($result->data); // utf8
-
-            $err = curl_errno($ch);
-            $result->error = curl_error($ch);
-            $result->headers = curl_getinfo($ch);
-            curl_close($ch);
-
-            if ($err != 0 && $conexoes < $tries) {
-                uc_correios_webservices_shipping_quote($url, ++$conexoes);
-            } else {
-                return $result;
-            }
-        } else {
-            drupal_set_message(t('Correios Quotes: cURL lib support is missing.'), 'error');
-        }
-    } else {
-        return drupal_http_request($url);
-    }
-
-*/
 }
 
 /**
@@ -608,29 +500,29 @@ function uc_correios_webservices_shipping_quote($url, $conexoes="1") {
  *    object containing rate, error, and debugging information
  */
 function uc_correios_webservices_quote($products, $details) {
-    
+
     $product         = uc_correios_webservices_products($products);
-    
+
     $cod_empresa     = variable_get('uc_correios_webservices_username', '');
     $senha           = variable_get('uc_correios_webservices_password', '');
-    
+
     $cep_origem      = uc_correios_webservices_origin_postal_code();
     $cep_destino     = uc_correios_webservices_destiny_postal_code($details);
-    
+
     $altura          = $product['height'];
     $largura         = $product['width'];
     $comprimento     = $product['length'];
-    
+
     $peso            = $product['weight'];
-    
+
     $servico         = '';
 
     $valor_declarado = uc_correios_webservice_declared_value($product['price']);
-    
+
     $retorno         = 'object';
-    
+
     //myTrace(array($cep_destino));
-    
+
 /*
     $xml = '';
     $quotes = array();
