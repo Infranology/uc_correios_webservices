@@ -178,7 +178,15 @@ function uc_correios_webservices_shipping_method() {
         'quote' => array(
             'type' => 'small_package',
             'callback' => 'uc_correios_webservices_quote',
-            'accessorials' => array_values(uc_correios_webservices_services())
+            'accessorials' => array(
+                '41106' => t('PAC'),
+                '40010' => t('SEDEX'),
+                '40215' => t('SEDEX 10'),
+                '40290' => t('SEDEX Hoje'),
+                '41068' => t('PAC'),  // with contract
+                '40096' => t('SEDEX'), // with contract
+                '81019' => t('e-SEDEX')  // with contract
+            )
         ),
         'weight' => $weight['correios_webservices'],
         'enabled' => $enabled['correios_webservices']
@@ -383,6 +391,16 @@ function uc_correios_webservices_services() {
 }
 
 /**
+ * List of names of services
+ * 
+ * @param type $service 
+ */
+
+function uc_correios_webservices_services_labels($service) {
+    
+}
+
+/**
  *
  * @param type $length
  *    Length of product
@@ -538,26 +556,24 @@ function uc_correios_webservices_quote($products, $details) {
 
     $peso            = $product['weight'];
 
-    $services        = array_values(uc_correios_webservices_services());
+    $services        = uc_correios_webservices_services();
 
     $valor_declarado = uc_correios_webservice_declared_value($product['price']);
 
     $retorno         = 'object';
 
-    //myTrace(array(uc_correios_webservices_services()));
     $quotes = array();
+    $method = uc_correios_webservices_shipping_method();
     
     foreach ($services as $key => $service) {
         
         if ($service != 0) {
 
             $servico = $service;
-            $method = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $servico, $valor_declarado, $retorno);
+            $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $servico, $valor_declarado, $retorno);
             
-            $delivery_price = str_replace(',', '.', htmlentities($method->Valor, ENT_QUOTES));
-            $delivery_date = htmlentities($method->PrazoEntrega, ENT_QUOTES);
-            
-            
+            $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
+            $delivery_date = check_plain($delivery->PrazoEntrega);
             
             // Rate
             $quotes[$key]['rate'] = $delivery_price;
@@ -566,7 +582,9 @@ function uc_correios_webservices_quote($products, $details) {
             $quotes[$key]['format'] = uc_currency_format($delivery_price);
             
             
-            $quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
+            //$quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
+            
+            $quotes[$key]['option_label'] .= t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
             
             // Display time estimate in label
             if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE) {
@@ -577,7 +595,7 @@ function uc_correios_webservices_quote($products, $details) {
             //if ()
             
             
-            myTrace(array($quotes, $method));
+            //myTrace(array($quotes, $method));
         }
         
     }
