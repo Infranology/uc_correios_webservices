@@ -447,7 +447,7 @@ function uc_correios_webservice_declared_value($value) {
 
     switch ($key) :
         case 1 :
-            $value = number_format($value, 2, ',', '.');
+            $value = number_format($value, 2, '.', '');
             return $value;
             break;
         default :
@@ -565,6 +565,7 @@ function uc_correios_webservices_quote($products, $details) {
     $quotes = array();
     $method = uc_correios_webservices_shipping_method();
     
+    
     foreach ($services as $key => $service) {
         
         if ($service != 0) {
@@ -594,8 +595,8 @@ function uc_correios_webservices_quote($products, $details) {
             // Error
             //if ()
             
+            //myTrace(array($valor_declarado, $delivery));
             
-            //myTrace(array($quotes, $method));
         }
         
     }
