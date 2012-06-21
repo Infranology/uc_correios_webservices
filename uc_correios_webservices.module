@@ -391,16 +391,6 @@ function uc_correios_webservices_services() {
 }
 
 /**
- * List of names of services
- * 
- * @param type $service 
- */
-
-function uc_correios_webservices_services_labels($service) {
-    
-}
-
-/**
  *
  * @param type $length
  *    Length of product
@@ -513,7 +503,7 @@ function uc_correios_webservices_products($products) {
 function uc_correios_webservices_origin_postal_code() {
     $code = variable_get('uc_quote_store_default_address', '');
 
-    return $code->postal_code;
+    return check_plain($code->postal_code);
 }
 
 /**
@@ -554,7 +544,7 @@ function uc_correios_webservices_quote($products, $details) {
     $comprimento     = check_plain($product['length']);
     $diametro        = 0;
 
-    $peso            = $product['weight'];
+    $peso            = check_plain($product['weight']);
 
     $services        = uc_correios_webservices_services();
 
@@ -595,7 +585,7 @@ function uc_correios_webservices_quote($products, $details) {
             // Error
             //if ()
             
-            myTrace(array($valor_declarado, $delivery));
+            //myTrace(array($delivery));
             
         }
         
