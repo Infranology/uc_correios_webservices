@@ -341,23 +341,6 @@ function uc_correios_webservices_admin_settings() {
 // Module Functions
 
 /**
- * Debug function
- */
-function myTrace($msg) {
-    $filename = "/Users/claudiosanches/dev/www/debug.txt";
-
-    ob_start(); //Start buffering
-    print_r($msg); //print the result
-    $output = ob_get_contents(); //get the result from buffer
-    ob_end_clean(); //close buffer
-
-    $h = fopen($filename, 'w'); //open a file
-    fwrite($h, $output . "\n \n \n"); //write the output text
-    fclose($h); //close file
-
-}
-
-/**
  * List of delivery services by Correios without contract
  *
  * @return array
@@ -528,6 +511,45 @@ function uc_correios_webservices_user_error_mensages($code, $msg) {
 }
 
 /**
+ * 
+ */
+function uc_correios_webservices_services_branding($key) {
+    $path = base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/';
+    $method = uc_correios_webservices_shipping_method();
+    $name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
+    $service = '';
+    
+    switch ($key) :
+        case '41106':
+            $service = 'pac';
+            break;
+        case '40010':
+            $service = 'sedex';
+            break;
+        case '40215':
+            $service = 'sedex-10';
+            break;
+        case '40290':
+            $service = 'sedex-hoje';
+            break;
+        case '41068':
+            $service = 'pac';
+            break;
+        case '40096':
+            $service = 'sedex';
+            break;
+        case '81019':
+            $service = 'e-sedex';
+            break;
+        default :
+            $service = 'sedex';
+            break;
+    endswitch;
+    
+    return '<img style="margin:0 5px 0 10px;" class="uc_correios_webservices_img" src="' . $path . $service . '.png" alt="' . $name . '" /><br />';
+}
+
+/**
  *
  * @param  $products
  *    Array of cart contents.
@@ -560,10 +582,8 @@ function uc_correios_webservices_quote($products, $details) {
     $retorno         = 'object';
 
     $quotes = array();
-    $method = uc_correios_webservices_shipping_method();
     
-    
-    foreach ($services as $key => $service) {
+    foreach ($services as $key => $service) :
         
         if ($service != 0) {
 
@@ -580,27 +600,24 @@ function uc_correios_webservices_quote($products, $details) {
             
             // Format
             $quotes[$key]['format'] = uc_currency_format($delivery_price);
-            
-            
-            //$quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
-            
-            $quotes[$key]['option_label'] .= t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-            
+
+            $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key);
+
             // Display time estimate in label
             if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE) {
-                $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
+                $quotes[$key]['option_label'] .= '<span style="font-size:smaller;margin-left:29px;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span><br />';
             }
+            
+            $quotes[$key]['option_label'] .= '<span style="font-weight:bold;margin-left:29px;">Valor</span>';
             
             // Error
             if ($delivery_error != 0) {
                 $quotes[$key]['error'] = '<br /><small>' . $delivery_error_msg . '</small>';
             }
             
-            myTrace(array($delivery, $quotes));
-            
         }
         
-    }
+    endforeach;
     
     return $quotes;
     
