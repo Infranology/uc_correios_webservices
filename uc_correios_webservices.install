@@ -53,6 +53,7 @@ function uc_correios_webservices_uninstall() {
     variable_del('uc_correios_webservices_password');
     variable_del('uc_correios_webservices_with_contract_services');
     variable_del('uc_correios_webservices_display_time_estimate');
+    variable_del('uc_correios_webservices_display_branding');
     variable_del('uc_correios_webservices_send_declared_value');
     variable_del('uc_correios_webservices_pac_length');
     variable_del('uc_correios_webservices_pac_height');
