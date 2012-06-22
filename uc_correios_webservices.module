@@ -391,10 +391,26 @@ function uc_correios_webservices_services() {
  * @return
  *    Total length in cm
  */
-function uc_correios_webservices_length_convert($length, $qty, $unit) {
+function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
+    
+    $min_length = check_plain(variable_get('uc_correios_webservices_min_length', 16));
+    $min_height = check_plain(variable_get('uc_correios_webservices_min_height', 2));
+    $min_width  = check_plain(variable_get('uc_correios_webservices_min_width', 11));
+    
     $total = $length * $qty * uc_length_conversion($unit, 'cm');
-
-    return $total;
+    
+    if ($type == 'length' && $total < $min_length) {
+        return $min_length;
+    }
+    elseif ($type == 'height' && $total < $min_height) {
+        return $min_height;
+    }
+    elseif ($type == 'width' && $total < $min_width) {
+        return $min_width;
+    }
+    else {
+        return $total;
+    }
 }
 
 /**
@@ -459,9 +475,9 @@ function uc_correios_webservices_products($products) {
         $length_units = $product->length_units;
 
         // product weight
-        $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units);
-        $width  += uc_correios_webservices_length_convert($product->width,  $qty, $length_units);
-        $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units);
+        $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units, 'height');
+        $width  += uc_correios_webservices_length_convert($product->width,  $qty, $length_units, 'width');
+        $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units, 'length');
 
         // product weight
         $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
