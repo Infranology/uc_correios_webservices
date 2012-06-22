@@ -27,12 +27,6 @@ function uc_correios_webservices_menu() {
         'type' => MENU_LOCAL_TASK
     );
 
-    $items['correios_webservices/estimating/quotes'] = array(
-        'page callback' => 'uc_correios_webservices_estimating_quotes',
-        'access arguments' => array('access content'),
-        'type' => MENU_CALLBACK
-    );
-
     return $items;
 }
 
@@ -80,69 +74,6 @@ function uc_correios_webservices_ca_predicate() {
         )
     );
     return $predicates;
-}
-
-/**
- * Implementation of hook_form_alter().
- */
-function uc_correios_webservices_form_alter(&$form, &$form_state, $form_id) {
-    if ($form_id == 'uc_cart_pane_quotes') {
-        $form['delivery_country']['#type'] = 'hidden';
-        $form['delivery_zone']['#type'] = 'hidden';
-    }
-
-    if (strpos($form_id, 'uc_product_add_to_cart_form_') === 0 && variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE)) {
-
-        if (arg(0) == 'node' && is_numeric(arg(1))) {
-
-            $nid = arg(1);
-
-            $form['correios_webservices'] = array(
-                '#type' => 'fieldset',
-                '#title' => t('Estimating shipping cost'),
-                '#collapsible' => FALSE,
-                '#collapsed' => FALSE
-            );
-
-            $form['correios_webservices']['nid'] = array(
-                '#type' => 'hidden',
-                '#value' => $nid
-            );
-
-            $form['correios_webservices']['uc_correios_webservices_postal_code'] = array(
-                '#type' => 'textfield',
-                '#title' => t('Enter your postal code'),
-                '#size' => 10,
-                '#maxlength' => 8,
-                '#required' => FALSE
-            );
-
-            $form['correios_webservices']['uc_correios_webservices_get_rate'] = array(
-                '#type' => 'button',
-                '#value' => t('Get Correios Quotes'),
-                '#ahah' => array(
-                    'event' => 'click',
-                    'path' => 'correios_webservices/estimating/quotes',
-                    'wrapper' => 'correios-quotes-estimated',
-                    'effect' => 'fade',
-                    'progress' => array(
-                        'type' => 'bar',
-                        'message' => t('Receiving quotes:')
-                    ),
-                    '#suffix' => '<br />'
-                ),
-            );
-
-            $form['correios_webservices']['uc_correios_webservices_find_postal_code'] = array(
-                '#value' => l(t('Find my Postal Code'), 'http://www.correios.com.br/servicos/cep/cep_loc_log.cfm', array('attributes' => array('target' => '_blank'))),
-            );
-
-            $form['correios_webservices']['estimated_cost'] = array('#type' => 'markup',
-                '#value' => '<div id="correios-quotes-estimated"></div>',
-                '#prefix' => '<br /><br />'
-            );
-        }
-    }
 }
 
 // Übercart Hooks
@@ -319,27 +250,6 @@ function uc_correios_webservices_admin_settings() {
         '#description' => t("Package width range 11 to 60 centimeters."),
         '#default_value' => variable_get('uc_correios_webservices_min_width', 11),
         '#required' => TRUE
-    );
-
-    $form['uc_correios_webservices_estimanting_quotes_by_product'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Estimating shipping cost on product page'),
-        '#collapsible' => TRUE,
-        '#collapsed' => TRUE
-    );
-
-    $form['uc_correios_webservices_estimanting_quotes_by_product']['uc_correios_webservices_estimanting_by_product_enabled'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Enable estimate shipping'),
-        '#description' => t('Show a block to estimate shipping cost on each product page.'),
-        '#default_value' => variable_get('uc_correios_webservices_estimanting_by_product_enabled', FALSE)
-    );
-
-    $form['uc_correios_webservices_estimanting_quotes_by_product']['uc_correios_webservices_estimating_by_product_message'] = array(
-        '#type' => 'textarea',
-        '#title' => t('Message'),
-        '#description' => t('A custom message displayed when a estimative shipping cost was received on product page.'),
-        '#default_value' => variable_get('uc_correios_webservices_estimating_by_product_message', t('The shipping cost estimate bellow refers only to this item by buying more items the shipping cost may be proportionately cheaper or even free. <br /> <strong> See the terms of the store and the minimum value for orders. </ strong>'))
     );
 
     return system_settings_form($form);
@@ -681,36 +591,4 @@ function uc_correios_webservices_quote($products, $details) {
     endforeach;
 
     return $quotes;
-}
-
-function uc_correios_webservices_estimating_quotes() {
-
-    $output = '<br /><label class="option">';
-    $output .= variable_get('uc_correios_webservices_estimating_by_product_message', '');
-    $output .= '</label><br />';
-
-    $node = node_load($_POST['nid']);
-    $product = new stdClass();
-    $product->nid = $_POST['nid'];
-    $product->qty = $_POST['qty'];
-    $product->price = $node->sell_price;
-    $product->weight = $node->weight;
-
-    $correios_webservices = uc_correios_webservices_quote(array($product), array('postal_code' => $_POST['uc_correios_webservices_postal_code'], 'country' => $node->shipping_address->country, 'zone' => ''));
-
-    foreach ($correios_webservices as $quote) {
-        $output .= '<br /><label class="option">';
-        $output .= $quote['option_label'] . ' ';
-        if (isset($quote['error'])) {
-            $output .= $quote['error'];
-        } else {
-            if (isset($quote['format']) && isset($quote['format'])) {
-                $output .= $quote['format'];
-            }
-        }
-        $output .= '</label><br />';
-    }
-
-    drupal_json(array('status' => TRUE, 'data' => $output));
-    exit();
 }

@@ -58,8 +58,6 @@ function uc_correios_webservices_uninstall() {
     variable_del('uc_correios_webservices_min_length');
     variable_del('uc_correios_webservices_min_height');
     variable_del('uc_correios_webservices_min_width');
-    variable_del('uc_correios_webservices_estimanting_by_product_enabled');
-    variable_del('uc_correios_webservices_estimating_by_product_message');
 
     cache_clear_all('variables', 'cache');
 }
