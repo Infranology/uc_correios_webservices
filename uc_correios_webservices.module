@@ -534,16 +534,16 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
     $after = '</span>';
     
     $errors = array(
-        '-3', // CEP de destino inválido
-        '-4', // Peso excedido
-        '-6', // Serviço indisponível para o trecho informado
-        '-10', // Precificação indisponível para o trecho informado
-        '-33', // Sistema temporariamente fora do ar. Favor tentar mais tarde.
+        '-3',   // CEP de destino inválido
+        '-4',   // Peso excedido
+        '-6',   // Serviço indisponível para o trecho informado
+        '-10',  // Precificação indisponível para o trecho informado
+        '-33',  // Sistema temporariamente fora do ar. Favor tentar mais tarde.
         '-888', // Erro ao calcular a tarifa
-        '007', // Localidade de destino não abrange o serviço informado
-        '008', // Serviço indisponível para o trecho informado
-        '010', // CEP final pertencente a Área de Risco. A entrega será realizada, temporariamente, na agência mais próxima do endereço do destinatário.
-        '7', // Serviço indisponível, tente mais tarde
+        '007',  // Localidade de destino não abrange o serviço informado
+        '008',  // Serviço indisponível para o trecho informado
+        '010',  // CEP final pertencente a Área de Risco. A entrega será realizada, temporariamente, na agência mais próxima do endereço do destinatário.
+        '7',    // Serviço indisponível, tente mais tarde
     );
     
     if (in_array($code, $errors)) {
@@ -681,122 +681,6 @@ function uc_correios_webservices_quote($products, $details) {
     endforeach;
 
     return $quotes;
-    
-    
-
-/*
-    $xml = '';
-    $quotes = array();
-    $method = uc_correios_webservices_shipping_method();
-    $weight_unit = variable_get('uc_weight_unit', NULL);
-
-    $addresses = array((array) variable_get('uc_quote_store_default_address', new stdClass()));
-    $orig = (object) $addresses[0];
-    // Origin Postal code (CEP) - Warehouse postal code
-    $cep_origem = $orig->postal_code;
-    //$ceporigem = variable_get('uc_store_postal_code', NULL); // Origin Postal code (CEP)
-
-    $shipment = new stdClass();
-
-    // Use uc_cart_get_contents to get cart items, because $products array won't work
-    $items = uc_cart_get_contents(uc_cart_get_id(), 'rebuild');
-
-    foreach ($products as $product) {
-        $node = node_load($product->nid);
-        // Calcula o peso dos produtos de acordo com a unidade de peso utilizada
-        $shipment->weight += $product->weight * $product->qty * uc_weight_conversion($node->weight_units, 'kg');
-        // Calcula o valor dos produtos de acordo com a quantidade
-        $shipment->price += $product->price * $product->qty;
-    }
-
-    $cep_destino = (object) $details;
-    $cep_destino = check_plain(preg_replace('/[[:^digit:]]/', '', $cep_destino->postal_code));
-    $valor_declarado = (variable_get('uc_correios_webservices_send_declared_value', FALSE)) ? number_format($shipment->price, 2, ',', '.') : 0;
-    $peso_final = $shipment->weight;
-
-    $default_engine = variable_get('uc_correios_webservices_default_engine', 0);
-
-    foreach (array_keys(array_filter(variable_get('uc_correios_webservices_services', array()))) as $correios_service) {
-
-        if ($default_engine == 1) {
-            switch ($correios_service) {
-                case '41106':
-                    $fetch_service = 2;
-                    break;
-                case '40010':
-                    $fetch_service = 1;
-                    break;
-            }
-        }
-        else
-            $fetch_service = $correios_service;
-
-        $service_url = _uc_correios_webservices_service_url($peso_final, $fetch_service, $cep_destino, $cep_origem, $valor_declarado);
-
-        $resp = uc_correios_webservices_shipping_quote($service_url, 1);
-
-        $xml = @simplexml_load_string(trim($resp->data));
-
-        if (user_access('configure quotes') && variable_get('uc_quote_display_debug', FALSE)) {
-            $quotes[$correios_service]['debug'] .= ' <br /><br /> ' . htmlentities((string) $resp->data);
-        }
-
-        if (!is_object($xml) || !$xml) {
-            $quotes[$correios_service]['error'] = t('Error getting correios shipping quotes.');
-        } else {
-
-            $error_msg = $error_no = '';
-
-            switch ($default_engine) {
-                case '0':
-                    $error_msg = check_plain((string) $xml->cServico->MsgErro);
-                    $error_no = check_plain((string) $xml->cServico->Erro);
-                    $preco_postal = str_replace(',', '.', check_plain($xml->cServico->Valor));
-                    $prazo_entrega = check_plain($xml->cServico->PrazoEntrega);
-                    $prazo_entrega = format_plural($prazo_entrega, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)');
-                    break;
-                case '1':
-                    $error_msg = check_plain($xml->status);
-                    $preco_postal_pac = (int) check_plain($xml->valor_pac);
-                    $preco_postal_sedex = (int) check_plain($xml->valor_sedex);
-                    if ($preco_postal_pac > 0)
-                        $preco_postal = check_plain($xml->valor_pac);
-                    if ($preco_postal_sedex > 0)
-                        $preco_postal = check_plain($xml->valor_sedex);
-                    $prazo_entrega = '';
-                    break;
-            }
-
-            if (empty($error_msg) || $error_no == 0 || $error_msg == 'OK') {
-                $quotes[$correios_service]['rate'] = $preco_postal;
-                $quotes[$correios_service]['estimated_delivery'] = $prazo_entrega;
-            } else {
-                $quotes[$correios_service]['error'] .= '   ' . $error_msg . ' (' . t('error:') . ' ' . $error_no . ')';
-            }
-        }
-    }
-
-    foreach ($quotes as $key => $quote) {
-        if (isset($quote['rate'])) {
-            $quotes[$key]['format'] = uc_currency_format($quote['rate']);
-        }
-
-        if (isset($quote['error']) || !empty($quote['error'])) {
-            $quotes[$key]['error'] = $quote['error'];
-            unset($quotes[$key]['rate']);
-            unset($quotes[$key]['format']);
-        }
-        $quotes[$key]['option_label'] = '<img class="correios_logo" src="' . base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/correios.gif" /> ';
-        $quotes[$key]['option_label'] .= t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-        if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE)
-            $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . $quote['estimated_delivery'] . '</span>';
-    }
-
-    uasort($quotes, 'uc_quote_price_sort');
-
-    return $quotes;
-
-*/
 }
 
 function uc_correios_webservices_estimating_quotes() {
