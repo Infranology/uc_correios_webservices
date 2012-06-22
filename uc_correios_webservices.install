@@ -37,9 +37,9 @@ function uc_correios_webservices_install() {
     // set default variables.
     variable_set('uc_correios_webservices_contract', array('0' => 'No contract', '1' => 'With contract'));
     variable_set('uc_correios_webservices_without_contract_services', array('41106' => '41106', '40010' => '40010', '40215' => '40215', '40290' => '40290'));
-    variable_set('uc_correios_webservices_pac_length', 16);
-    variable_set('uc_correios_webservices_pac_height', 2);
-    variable_set('uc_correios_webservices_pac_depth', 11);
+    variable_set('uc_correios_webservices_min_length', 16);
+    variable_set('uc_correios_webservices_min_height', 2);
+    variable_set('uc_correios_webservices_min_depth', 11);
 }
 
 /**
@@ -55,9 +55,9 @@ function uc_correios_webservices_uninstall() {
     variable_del('uc_correios_webservices_display_time_estimate');
     variable_del('uc_correios_webservices_display_branding');
     variable_del('uc_correios_webservices_send_declared_value');
-    variable_del('uc_correios_webservices_pac_length');
-    variable_del('uc_correios_webservices_pac_height');
-    variable_del('uc_correios_webservices_pac_depth');
+    variable_del('uc_correios_webservices_min_length');
+    variable_del('uc_correios_webservices_min_height');
+    variable_del('uc_correios_webservices_min_depth');
     variable_del('uc_correios_webservices_estimanting_by_product_enabled');
     variable_del('uc_correios_webservices_estimating_by_product_message');
 

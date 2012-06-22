@@ -284,40 +284,40 @@ function uc_correios_webservices_admin_settings() {
         '#default_value' => variable_get('uc_correios_webservices_display_branding', TRUE)
     );
 
-    $form['uc_correios_webservices_pac'] = array(
+    $form['uc_correios_webservices_min'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Correios PAC setup'),
+        '#title' => t('Minimum size of the package setup'),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE
     );
 
-    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_length'] = array(
+    $form['uc_correios_webservices_min']['uc_correios_webservices_min_length'] = array(
         '#type' => 'textfield',
         '#title' => t('Package length'),
         '#size' => 6,
         '#maxlength' => 8,
         '#description' => t("Package length range 16 to 60 centimeters."),
-        '#default_value' => variable_get('uc_correios_webservices_pac_length', 16),
+        '#default_value' => variable_get('uc_correios_webservices_min_length', 16),
         '#required' => TRUE
     );
 
-    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_height'] = array(
+    $form['uc_correios_webservices_min']['uc_correios_webservices_min_height'] = array(
         '#type' => 'textfield',
         '#title' => t('Package height'),
         '#size' => 6,
         '#maxlength' => 8,
         '#description' => t("Package height range 2 to 60 centimeters."),
-        '#default_value' => variable_get('uc_correios_webservices_pac_height', 2),
+        '#default_value' => variable_get('uc_correios_webservices_min_height', 2),
         '#required' => TRUE
     );
 
-    $form['uc_correios_webservices_pac']['uc_correios_webservices_pac_depth'] = array(
+    $form['uc_correios_webservices_min']['uc_correios_webservices_min_depth'] = array(
         '#type' => 'textfield',
-        '#title' => t('Package depth'),
+        '#title' => t('Package width'),
         '#size' => 6,
         '#maxlength' => 8,
-        '#description' => t("Package depth range 5 to 60 centimeters."),
-        '#default_value' => variable_get('uc_correios_webservices_pac_depth', 11),
+        '#description' => t("Package width range 11 to 60 centimeters."),
+        '#default_value' => variable_get('uc_correios_webservices_min_depth', 11),
         '#required' => TRUE
     );
 
