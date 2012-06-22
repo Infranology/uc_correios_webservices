@@ -31,15 +31,6 @@ function uc_correios_webservices_menu() {
 }
 
 /**
- * Implementation of hook_init().
- */
-function uc_correios_webservices_init() {
-
-    global $conf;
-    $conf['i18n_variables'][] = 'uc_correios_webservices_estimating_by_product_message';
-}
-
-/**
  * Implementation of hook_perm().
  */
 function uc_correios_webservices_perm() {
