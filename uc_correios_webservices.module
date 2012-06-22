@@ -31,6 +31,16 @@ function uc_correios_webservices_menu() {
 }
 
 /**
+ * Implementation of hook_init().
+ */
+function uc_correios_webservices_init() {
+    if ($_GET['q'] == 'admin/store/settings/quotes/methods/correios_webservices') {
+        drupal_add_css(drupal_get_path('module', 'uc_correios_webservices') .'/css/admin.css', 'module', 'all');
+        drupal_add_js(drupal_get_path('module', 'uc_correios_webservices') .'/js/admin.js', 'module', 'header');
+    }
+}
+
+/**
  * Implementation of hook_perm().
  */
 function uc_correios_webservices_perm() {
