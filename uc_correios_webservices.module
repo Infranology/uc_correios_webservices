@@ -478,13 +478,13 @@ function uc_correios_webservices_services_branding($key) {
             $service = 'sedex-hoje';
             break;
         case '41068':
-            $service = 'pac';
+            $service = 'pac'; // with contract
             break;
         case '40096':
-            $service = 'sedex';
+            $service = 'sedex'; // with contract
             break;
         case '81019':
-            $service = 'e-sedex';
+            $service = 'e-sedex'; // with contract
             break;
         default :
             $service = 'sedex';
