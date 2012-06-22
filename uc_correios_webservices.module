@@ -534,7 +534,7 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
         return $before . $msg . $after;
     }
     else {
-        return '0';
+        return '0'; // Return 0 for validation
     }
 }
 
@@ -599,7 +599,7 @@ function uc_correios_webservices_quote($products, $details) {
     $altura          = check_plain($product['height']);
     $largura         = check_plain($product['width']);
     $comprimento     = check_plain($product['length']);
-    $diametro        = 0;
+    $diametro        = '0';
 
     $peso            = check_plain($product['weight']);
 
