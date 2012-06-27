@@ -1,4 +1,4 @@
-## Module uc_correios_ebservice
+## Module uc_correios_webservices
 
 ### Requirements
 
