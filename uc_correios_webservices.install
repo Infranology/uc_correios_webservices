@@ -6,14 +6,12 @@
  *
  * Coded by/Desenvolvido por Wanderson S. Reis aka wasare
  * Modified by Infranology
- *
  */
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  *
  * "ported" from uc_ups_requirements found at ubercart/shipping/uc_ups/uc_ups.install
- *
  */
 function uc_correios_webservices_requirements($phase) {
   $t = get_t();
@@ -32,7 +30,7 @@ function uc_correios_webservices_requirements($phase) {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function uc_correios_webservices_install() {
   // set default variables.
@@ -44,7 +42,7 @@ function uc_correios_webservices_install() {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function uc_correios_webservices_uninstall() {
 

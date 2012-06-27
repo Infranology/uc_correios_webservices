@@ -78,10 +78,12 @@ function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_dest
   // RETORNO
   if ($retorno == 'object') {
     return $objeto;
-  } elseif ($retorno == 'json') {
+  }
+  elseif ($retorno == 'json') {
     $json = json_encode($objeto);
     return $json;
-  } else {
+  }
+  else {
     return $soap;
   }
 }

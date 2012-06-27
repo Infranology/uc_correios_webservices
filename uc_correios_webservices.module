@@ -14,7 +14,7 @@ include('api/correioswebservice.php');
 // Drupal Hooks
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function uc_correios_webservices_menu() {
   $items = array();
@@ -31,7 +31,7 @@ function uc_correios_webservices_menu() {
 }
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  */
 function uc_correios_webservices_init() {
   if ($_GET['q'] == 'admin/store/settings/quotes/methods/correios_webservices') {
@@ -41,7 +41,7 @@ function uc_correios_webservices_init() {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function uc_correios_webservices_perm() {
   return array('administer correios quotes');
@@ -49,7 +49,7 @@ function uc_correios_webservices_perm() {
 
 /**
  *
- * Implementation of hook_ca_predicate().
+ * Implements hook_ca_predicate().
  *
  * Connect the correios_webservices action and event.
  */
@@ -80,7 +80,7 @@ function uc_correios_webservices_ca_predicate() {
 // Übercart Hooks
 
 /**
- * Implementation of Ubercart's hook_shipping_type().
+ * Implements Ubercart's hook_shipping_type().
  */
 function uc_correios_webservices_shipping_type() {
   $weight = variable_get('uc_quote_type_weight', array('small_package' => 0));
@@ -96,7 +96,7 @@ function uc_correios_webservices_shipping_type() {
 }
 
 /**
- * Implementation of Übercart's hook_shipping_method().
+ * Implements Übercart's hook_shipping_method().
  */
 function uc_correios_webservices_shipping_method() {
   $methods = array();
@@ -289,7 +289,6 @@ function uc_correios_webservices_services() {
 }
 
 /**
- *
  * @param type $length
  *    Length of product
  * @param type $qty
@@ -318,7 +317,6 @@ function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
 }
 
 /**
- *
  * @param type $weight
  *    Weigth of product
  * @param type $qty
@@ -335,7 +333,6 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
 }
 
 /**
- *
  * @param type $value
  *    Total purchase
  * @return
@@ -356,7 +353,6 @@ function uc_correios_webservices_declared_value($value) {
 }
 
 /**
- *
  * @param type $products
  *    Array with cart products
  * @return array
