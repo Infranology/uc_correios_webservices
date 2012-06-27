@@ -5,6 +5,7 @@
  * Shipping quote module that defines a shipping rate for each product base on weight and origin/destiny zip/postal code
  *
  * Coded by Wanderson S. Reis aka wasare [http://www.ospath.com]
+ * Modified by Infranology
  *
  */
 
