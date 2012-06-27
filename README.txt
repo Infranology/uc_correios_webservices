@@ -14,5 +14,3 @@ This module is a fork from the references below:
 - http://www.correios.com.br/webservices/
 - http://drupal.org/project/uc_correios_quotes
 - http://blog.shiguenori.com/2010/08/20/webservice-dos-correios/
-
-
