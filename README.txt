@@ -7,8 +7,13 @@ Drupal: v6.x
 
 ### Objective
 
-Module to calculate shipping costs based on Brazil correios webservice integration. 
-This module also parse xml return and error.
+Module to calculate shipping costs based on Brazil correios 
+webservice integration. This module also parse xml return and error.
+
+### Requirements
+
+This module require php soap extension:
+http://www.php.net/manual/en/book.soap.php
 
 This module is a fork from the references below:
 - http://www.correios.com.br/webservices/
