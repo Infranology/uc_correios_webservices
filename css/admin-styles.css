@@ -1,3 +1,5 @@
 #edit-uc-correios-webservices-username-wrapper,
 #edit-uc-correios-webservices-password-wrapper,
-#edit-uc-correios-webservices-password-wrapper + div {display:none;}
+#edit-uc-correios-webservices-password-wrapper + div {
+  display: none;
+}
