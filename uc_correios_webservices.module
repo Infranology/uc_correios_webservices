@@ -345,7 +345,7 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
 function uc_correios_webservices_declared_value($value) {
   $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
 
-  switch ($key) :
+  switch ($key) {
     case 1 :
       $value = number_format($value, 2, '.', '');
       return check_plain($value);
@@ -353,7 +353,7 @@ function uc_correios_webservices_declared_value($value) {
     default :
       return '0';
       break;
-  endswitch;
+  }
 }
 
 /**
@@ -434,16 +434,28 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
   $after = '</span>';
 
   $errors = array(
-    '-3', // CEP de destino inválido
-    '-4', // Peso excedido
-    '-6', // Serviço indisponível para o trecho informado
-    '-10', // Precificação indisponível para o trecho informado
-    '-33', // Sistema temporariamente fora do ar. Favor tentar mais tarde.
-    '-888', // Erro ao calcular a tarifa
-    '007', // Localidade de destino não abrange o serviço informado
-    '008', // Serviço indisponível para o trecho informado
-    '010', // CEP final pertencente a Área de Risco. A entrega será realizada, temporariamente, na agência mais próxima do endereço do destinatário.
-    '7', // Serviço indisponível, tente mais tarde
+    // CEP de destino inválido
+    '-3',
+    // Peso excedido
+    '-4',
+    // Serviço indisponível para o trecho informado
+    '-6',
+    // Precificação indisponível para o trecho informado
+    '-10',
+    // Sistema temporariamente fora do ar. Favor tentar mais tarde.
+    '-33',
+    // Erro ao calcular a tarifa
+    '-888',
+    // Localidade de destino não abrange o serviço informado
+    '007',
+    // Serviço indisponível para o trecho informado
+    '008',
+    // CEP final pertencente a Área de Risco.
+    // A entrega será realizada, temporariamente, na agência mais próxima do
+    // endereço do destinatário.
+    '010',
+    // Serviço indisponível, tente mais tarde
+    '7',
   );
 
   if (in_array($code, $errors)) {
@@ -463,7 +475,7 @@ function uc_correios_webservices_services_branding($key) {
   $name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
   $service = '';
 
-  switch ($key) :
+  switch ($key) {
     case '41106' :
       $service = 'pac';
       break;
@@ -489,7 +501,7 @@ function uc_correios_webservices_services_branding($key) {
     default :
       $service = 'sedex';
       break;
-  endswitch;
+  }
 
   return '<img style="margin:0 5px 0 10px;" class="uc_correios_webservices_img" src="' . $path . $service . '.png" alt="' . $name . '" /><br />';
 }
@@ -528,57 +540,57 @@ function uc_correios_webservices_quote($products, $details) {
   $quotes = array();
   $method = uc_correios_webservices_shipping_method();
 
-  foreach ($services as $key => $service) :
+  foreach ($services as $key => $service) {
 
-  if ($service != 0) {
+    if ($service != 0) {
 
-  $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
-  $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
+      $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
+      $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
 
-  $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-  $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
-  $delivery_date = check_plain($delivery->PrazoEntrega);
-  $delivery_error_code = check_plain($delivery->Erro);
-  $delivery_error_msg = check_plain($delivery->MsgErro);
+      $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
+      $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
+      $delivery_date = check_plain($delivery->PrazoEntrega);
+      $delivery_error_code = check_plain($delivery->Erro);
+      $delivery_error_msg = check_plain($delivery->MsgErro);
 
-  // Rate.
-  $quotes[$key]['rate'] = $delivery_price;
+      // Rate.
+      $quotes[$key]['rate'] = $delivery_price;
 
-  // Format.
-  $quotes[$key]['format'] = uc_currency_format($delivery_price);
+      // Format.
+      $quotes[$key]['format'] = uc_currency_format($delivery_price);
 
-  if ($display_branding == TRUE) {
-    $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
-  }
-  else {
-    $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
-  }
-
-  // Display time estimate in label.
-  if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
-    $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
-  }
-
-    // Error reports.
-    if ($delivery_error_code != 0) {
-      $delivery_user_error_msg = uc_correios_webservices_user_error_messages($delivery_error_code, $delivery_error_msg);
-      $delivery_error_log = t('error: ') . $delivery_error_code . ' - ' . $delivery_error_msg;
-
-      // Error records in the Drupal.
-      watchdog('correios', $delivery_error_log, '', WATCHDOG_ERROR, NULL);
-
-      // Errors validation.
-      if ($delivery_user_error_msg != 0) {
-        $quotes[$key]['error'] = $delivery_user_error_msg;
-        unset($quotes[$key]['rate'], $quotes[$key]['rate']);
+      if ($display_branding == TRUE) {
+        $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
       }
       else {
-        unset($quotes[$key]);
+        $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
+      }
+
+      // Display time estimate in label.
+      if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
+        $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
+      }
+
+      // Error reports.
+      if ($delivery_error_code != 0) {
+        $delivery_user_error_msg = uc_correios_webservices_user_error_messages($delivery_error_code, $delivery_error_msg);
+        $delivery_error_log = t('error: ') . $delivery_error_code . ' - ' . $delivery_error_msg;
+
+        // Error records in the Drupal.
+        watchdog('correios', $delivery_error_log, '', WATCHDOG_ERROR, NULL);
+
+        // Errors validation.
+        if ($delivery_user_error_msg != 0) {
+          $quotes[$key]['error'] = $delivery_user_error_msg;
+          unset($quotes[$key]['rate'], $quotes[$key]['rate']);
+        }
+        else {
+          unset($quotes[$key]);
+        }
       }
     }
-  }
 
-  endforeach;
+  }
 
   return $quotes;
 }
