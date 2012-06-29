@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @file
  * Funcao para calculo dos correios
  *
  * Retorna via SOAP o valor do frete correios para diferentes metodos.
@@ -29,7 +30,7 @@
 function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem,
   $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300',
   $servico, $valor_declarado = '0', $retorno) {
-  
+
   // Trata os cep's.
   $cep_destino = preg_replace("([^0-9])", '', $cep_destino);
   $cep_origem = preg_replace("([^0-9])", '', $cep_origem);

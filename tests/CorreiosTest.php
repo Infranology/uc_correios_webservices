@@ -20,13 +20,4 @@ class CorreiosTest extends PHPUnit_Framework_TestCase {
     $a = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $servico, $valor_declarado, $retorno);
     print_r($a);
   }
-
-  public function testParseResult() {
-    
-  }
-
-  public function testReturnError() {
-    
-  }
-
 }

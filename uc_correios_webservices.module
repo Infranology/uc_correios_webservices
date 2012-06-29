@@ -6,12 +6,11 @@
  *
  * Coded by Wanderson S. Reis aka wasare [http://www.ospath.com]
  * Modified by Infranology
- *
  */
-// API
+// API.
 include('api/correioswebservice.php');
 
-// Drupal Hooks
+// Drupal Hooks.
 
 /**
  * Implements hook_menu().
@@ -77,7 +76,7 @@ function uc_correios_webservices_ca_predicate() {
   return $predicates;
 }
 
-// Übercart Hooks
+// Übercart Hooks.
 
 /**
  * Implements Ubercart's hook_shipping_type().
@@ -115,9 +114,10 @@ function uc_correios_webservices_shipping_method() {
               '40010' => t('SEDEX'),
               '40215' => t('SEDEX 10'),
               '40290' => t('SEDEX Hoje'),
-              '41068' => t('PAC'), // with contract
-              '40096' => t('SEDEX'), // with contract
-              '81019' => t('e-SEDEX')  // with contract
+               // Define "With Contract".
+              '41068' => t('PAC'),
+              '40096' => t('SEDEX'),
+              '81019' => t('e-SEDEX')
           )
       ),
       'weight' => $weight['correios_webservices'],
@@ -127,7 +127,7 @@ function uc_correios_webservices_shipping_method() {
   return $methods;
 }
 
-// Menu Callbacks
+// Menu Callbacks.
 
 /**
  * Configure the store default shipping rate.
@@ -255,7 +255,7 @@ function uc_correios_webservices_admin_settings() {
   return system_settings_form($form);
 }
 
-// Module Functions
+// Module Functions.
 
 /**
  * List of delivery services by Correios without contract
@@ -290,13 +290,13 @@ function uc_correios_webservices_services() {
 
 /**
  * @param type $length
- *    Length of product
+ *   Length of product
  * @param type $qty
- *    Quantity of products
+ *   Quantity of products
  * @param type $unit
- *    Measuring unit
+ *   Measuring unit
  * @return
- *    Total length in cm
+ *   Total length in cm
  */
 function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
   $min_length = check_plain(variable_get('uc_correios_webservices_min_length', 16));
@@ -307,24 +307,27 @@ function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
 
   if ($type == 'length' && $total < $min_length) {
     return $min_length;
-  } elseif ($type == 'height' && $total < $min_height) {
+  } 
+  elseif ($type == 'height' && $total < $min_height) {
     return $min_height;
-  } elseif ($type == 'width' && $total < $min_width) {
+  } 
+  elseif ($type == 'width' && $total < $min_width) {
     return $min_width;
-  } else {
+  } 
+  else {
     return $total;
   }
 }
 
 /**
  * @param type $weight
- *    Weigth of product
+ *   Weigth of product
  * @param type $qty
- *    Quantity of products
+ *   Quantity of products
  * @param type $unit
- *    Measuring unit
+ *   Measuring unit
  * @return
- *    Total weight in kg
+ *   Total weight in kg
  */
 function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
   $total = $weight * $qty * uc_weight_conversion($unit, 'kg');
@@ -334,9 +337,9 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
 
 /**
  * @param type $value
- *    Total purchase
+ *   Total purchase
  * @return
- *    Declared value
+ *   Declared value
  */
 function uc_correios_webservices_declared_value($value) {
   $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
@@ -354,9 +357,9 @@ function uc_correios_webservices_declared_value($value) {
 
 /**
  * @param type $products
- *    Array with cart products
+ *   Array with cart products.
  * @return array
- *    Return array with products information
+ *   Return array with products information.
  */
 function uc_correios_webservices_products($products) {
   $height = '';
@@ -371,20 +374,20 @@ function uc_correios_webservices_products($products) {
     $weight_units = $product->weight_units;
     $length_units = $product->length_units;
 
-    // product weight
+    // Product weight.
     $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units, 'height');
     $width += uc_correios_webservices_length_convert($product->width, $qty, $length_units, 'width');
     $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units, 'length');
 
-    // product weight
+    // Product weight.
     $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
 
-    // product price
+    // Product price.
     $price += $product->price * $product->qty;
 
   endforeach;
 
-  // Rounding up values
+  // Rounding up values.
   $height = ceil($height);
   $width = ceil($width);
   $length = ceil($length);
@@ -410,7 +413,6 @@ function uc_correios_webservices_origin_postal_code() {
 }
 
 /**
- *
  * @param type $details
  *   Get shipping details
  * @return type
@@ -424,7 +426,7 @@ function uc_correios_webservices_destiny_postal_code($details) {
 }
 
 /**
- * 
+ * Return errors from correios to user
  */
 function uc_correios_webservices_user_error_messages($code, $msg) {
   $before = '<span style="color:#e00;font-size:small">';
@@ -460,26 +462,27 @@ function uc_correios_webservices_services_branding($key) {
   $service = '';
 
   switch ($key) :
-    case '41106':
+    case '41106' :
       $service = 'pac';
       break;
-    case '40010':
+    case '40010' :
       $service = 'sedex';
       break;
-    case '40215':
+    case '40215' :
       $service = 'sedex-10';
       break;
-    case '40290':
+    case '40290' :
       $service = 'sedex-hoje';
       break;
-    case '41068':
-      $service = 'pac'; // with contract
+    // Cases "With Contract".
+    case '41068' :
+      $service = 'pac';
       break;
-    case '40096':
-      $service = 'sedex'; // with contract
+    case '40096' :
+      $service = 'sedex';
       break;
-    case '81019':
-      $service = 'e-sedex'; // with contract
+    case '81019' :
+      $service = 'e-sedex';
       break;
     default :
       $service = 'sedex';
@@ -490,13 +493,12 @@ function uc_correios_webservices_services_branding($key) {
 }
 
 /**
- *
  * @param  $products
- *    Array of cart contents.
+ *   Array of cart contents.
  * @param  $details
- *    Order details other than product information.
+ *   Order details other than product information.
  * @return mixed
- *    object containing rate, error, and debugging information
+ *   Object containing rate, error, and debugging information
  */
 function uc_correios_webservices_quote($products, $details) {
 
@@ -526,51 +528,53 @@ function uc_correios_webservices_quote($products, $details) {
 
   foreach ($services as $key => $service) :
 
-    if ($service != 0) {
+  if ($service != 0) {
 
-      $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
-      $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
+    $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
+    $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
 
-      $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-      $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
-      $delivery_date = check_plain($delivery->PrazoEntrega);
-      $delivery_error_code = check_plain($delivery->Erro);
-      $delivery_error_msg = check_plain($delivery->MsgErro);
+    $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
+    $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
+    $delivery_date = check_plain($delivery->PrazoEntrega);
+    $delivery_error_code = check_plain($delivery->Erro);
+    $delivery_error_msg = check_plain($delivery->MsgErro);
 
-      // Rate
-      $quotes[$key]['rate'] = $delivery_price;
+    // Rate.
+    $quotes[$key]['rate'] = $delivery_price;
 
-      // Format
-      $quotes[$key]['format'] = uc_currency_format($delivery_price);
+    // Format.
+    $quotes[$key]['format'] = uc_currency_format($delivery_price);
 
-      if ($display_branding == TRUE) {
-        $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
-      } else {
-        $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
-      }
+    if ($display_branding == TRUE) {
+      $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
+    } 
+    else {
+      $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
+    }
 
-      // Display time estimate in label
-      if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
-        $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
-      }
+    // Display time estimate in label.
+    if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
+      $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
+    }
 
-      // Error reports
-      if ($delivery_error_code != 0) {
-        $delivery_user_error_msg = uc_correios_webservices_user_error_messages($delivery_error_code, $delivery_error_msg);
-        $delivery_error_log = t('error: ') . $delivery_error_code . ' - ' . $delivery_error_msg;
+    // Error reports.
+    if ($delivery_error_code != 0) {
+      $delivery_user_error_msg = uc_correios_webservices_user_error_messages($delivery_error_code, $delivery_error_msg);
+      $delivery_error_log = t('error: ') . $delivery_error_code . ' - ' . $delivery_error_msg;
 
-        // Error records in the Drupal
-        watchdog('correios', $delivery_error_log, '', WATCHDOG_ERROR, NULL);
+      // Error records in the Drupal.
+      watchdog('correios', $delivery_error_log, '', WATCHDOG_ERROR, NULL);
 
-        // Errors validation
-        if ($delivery_user_error_msg != 0) {
-          $quotes[$key]['error'] = $delivery_user_error_msg;
-          unset($quotes[$key]['rate'], $quotes[$key]['rate']);
-        } else {
-          unset($quotes[$key]);
-        }
+      // Errors validation.
+      if ($delivery_user_error_msg != 0) {
+        $quotes[$key]['error'] = $delivery_user_error_msg;
+        unset($quotes[$key]['rate'], $quotes[$key]['rate']);
+      } 
+      else {
+        unset($quotes[$key]);
       }
     }
+  }
 
   endforeach;
 
