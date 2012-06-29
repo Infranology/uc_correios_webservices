@@ -283,7 +283,8 @@ function uc_correios_webservices_services() {
 
   if ($login != NULL) {
     return $with_login;
-  } else {
+  }
+  else {
     return $without_login;
   }
 }
@@ -307,13 +308,13 @@ function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
 
   if ($type == 'length' && $total < $min_length) {
     return $min_length;
-  } 
+  }
   elseif ($type == 'height' && $total < $min_height) {
     return $min_height;
-  } 
+  }
   elseif ($type == 'width' && $total < $min_width) {
     return $min_width;
-  } 
+  }
   else {
     return $total;
   }
@@ -370,20 +371,20 @@ function uc_correios_webservices_products($products) {
 
   foreach ($products as $product) :
 
-    $qty = $product->qty;
-    $weight_units = $product->weight_units;
-    $length_units = $product->length_units;
+  $qty = $product->qty;
+  $weight_units = $product->weight_units;
+  $length_units = $product->length_units;
 
-    // Product weight.
-    $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units, 'height');
-    $width += uc_correios_webservices_length_convert($product->width, $qty, $length_units, 'width');
-    $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units, 'length');
+  // Product weight.
+  $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units, 'height');
+  $width += uc_correios_webservices_length_convert($product->width, $qty, $length_units, 'width');
+  $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units, 'length');
 
-    // Product weight.
-    $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
+  // Product weight.
+  $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
 
-    // Product price.
-    $price += $product->price * $product->qty;
+  // Product price.
+  $price += $product->price * $product->qty;
 
   endforeach;
 
@@ -433,21 +434,22 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
   $after = '</span>';
 
   $errors = array(
-      '-3', // CEP de destino inválido
-      '-4', // Peso excedido
-      '-6', // Serviço indisponível para o trecho informado
-      '-10', // Precificação indisponível para o trecho informado
-      '-33', // Sistema temporariamente fora do ar. Favor tentar mais tarde.
-      '-888', // Erro ao calcular a tarifa
-      '007', // Localidade de destino não abrange o serviço informado
-      '008', // Serviço indisponível para o trecho informado
-      '010', // CEP final pertencente a Área de Risco. A entrega será realizada, temporariamente, na agência mais próxima do endereço do destinatário.
-      '7', // Serviço indisponível, tente mais tarde
+    '-3', // CEP de destino inválido
+    '-4', // Peso excedido
+    '-6', // Serviço indisponível para o trecho informado
+    '-10', // Precificação indisponível para o trecho informado
+    '-33', // Sistema temporariamente fora do ar. Favor tentar mais tarde.
+    '-888', // Erro ao calcular a tarifa
+    '007', // Localidade de destino não abrange o serviço informado
+    '008', // Serviço indisponível para o trecho informado
+    '010', // CEP final pertencente a Área de Risco. A entrega será realizada, temporariamente, na agência mais próxima do endereço do destinatário.
+    '7', // Serviço indisponível, tente mais tarde
   );
 
   if (in_array($code, $errors)) {
     return $before . $msg . $after;
-  } else {
+  }
+  else {
     return '0'; // Return 0 for validation
   }
 }
@@ -493,12 +495,12 @@ function uc_correios_webservices_services_branding($key) {
 }
 
 /**
- * @param  $products
+ * @param $products
  *   Array of cart contents.
- * @param  $details
+ * @param $details
  *   Order details other than product information.
  * @return mixed
- *   Object containing rate, error, and debugging information
+ *   Object containing rate, error, and debugging information.
  */
 function uc_correios_webservices_quote($products, $details) {
 
@@ -530,32 +532,32 @@ function uc_correios_webservices_quote($products, $details) {
 
   if ($service != 0) {
 
-    $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
-    $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
+  $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
+  $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
 
-    $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
-    $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
-    $delivery_date = check_plain($delivery->PrazoEntrega);
-    $delivery_error_code = check_plain($delivery->Erro);
-    $delivery_error_msg = check_plain($delivery->MsgErro);
+  $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
+  $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
+  $delivery_date = check_plain($delivery->PrazoEntrega);
+  $delivery_error_code = check_plain($delivery->Erro);
+  $delivery_error_msg = check_plain($delivery->MsgErro);
 
-    // Rate.
-    $quotes[$key]['rate'] = $delivery_price;
+  // Rate.
+  $quotes[$key]['rate'] = $delivery_price;
 
-    // Format.
-    $quotes[$key]['format'] = uc_currency_format($delivery_price);
+  // Format.
+  $quotes[$key]['format'] = uc_currency_format($delivery_price);
 
-    if ($display_branding == TRUE) {
-      $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
-    } 
-    else {
-      $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
-    }
+  if ($display_branding == TRUE) {
+    $quotes[$key]['option_label'] = uc_correios_webservices_services_branding($key) . '<span style="margin-left:29px;font-weight:bold;">' . $delivery_name . '</span>';
+  }
+  else {
+    $quotes[$key]['option_label'] = '<span style="font-weight:bold;">' . $delivery_name . '</span>';
+  }
 
-    // Display time estimate in label.
-    if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
-      $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
-    }
+  // Display time estimate in label.
+  if (variable_get('uc_correios_webservices_display_time_estimate', FALSE) == TRUE && $delivery_error_code == 0) {
+    $quotes[$key]['option_label'] .= ' <span style="font-size:smaller;">' . format_plural($delivery_date, '(Estimated delivery in 1 business day)', '(Estimated delivery in @count business days)') . '</span>';
+  }
 
     // Error reports.
     if ($delivery_error_code != 0) {
@@ -569,7 +571,7 @@ function uc_correios_webservices_quote($products, $details) {
       if ($delivery_user_error_msg != 0) {
         $quotes[$key]['error'] = $delivery_user_error_msg;
         unset($quotes[$key]['rate'], $quotes[$key]['rate']);
-      } 
+      }
       else {
         unset($quotes[$key]);
       }
