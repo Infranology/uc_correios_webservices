@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Função retorna via SOAP o valor do frete correios para diferentes metodos.
+ * Funcao para calculo dos correios
+ *
+ * Retorna via SOAP o valor do frete correios para diferentes metodos.
  *
  * @param $servico
  *   Define os diferentes metodos de envio:
@@ -19,63 +21,63 @@
  *   - object
  *   - json
  *   - soap = default
- * 
+ *
  * Coded by http://blog.shiguenori.com/2010/08/20/webservice-dos-correios/.
  * Modified by Infranology.
  */
 
-function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, 
-  $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300', 
+function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem,
+  $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300',
   $servico, $valor_declarado = '0', $retorno) {
   
-  // trata os cep's.
+  // Trata os cep's.
   $cep_destino = preg_replace("([^0-9])", '', $cep_destino);
   $cep_origem = preg_replace("([^0-9])", '', $cep_origem);
 
   $webservice = 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx?WSDL';
 
-  // torna em objeto as variaveis.
+  // Torna em objeto as variaveis.
   $parms = new stdClass();
-  // pac, sedex e esedex (todos com contrato).
+  // Pac, sedex e esedex (todos com contrato).
   $parms->nCdServico = $servico;
-  // login do cadastro no correios (opcional).
+  // Login do cadastro no correios (opcional).
   $parms->nCdEmpresa = $cod_empresa;
-  // senha do cadastro no correios (opcional).
+  // Senha do cadastro no correios (opcional).
   $parms->sDsSenha = $senha;
-  // tipo de retorno.
+  // Tipo de retorno.
   $parms->StrRetorno = 'xml';
-  // cep cliente.
+  // Cep cliente.
   $parms->sCepDestino = $cep_destino;
-  // cep da loja (bd).
+  // Cep da loja (bd).
   $parms->sCepOrigem = $cep_origem;
 
-  // informacoes de cubagem
+  // Informacoes de cubagem.
   $parms->nVlPeso = $peso;
   $parms->nVlComprimento = $comprimento;
   $parms->nVlDiametro = $diametro;
   $parms->nVlAltura = $altura;
   $parms->nVlLargura = $largura;
 
-  // outros obrigatorios (mesmo vazio).
+  // Outros obrigatorios (mesmo vazio).
   $parms->nCdFormato = 1;
   $parms->sCdMaoPropria = 'N';
   $parms->nVlValorDeclarado = $valor_declarado;
   $parms->sCdAvisoRecebimento = 'N';
 
-  // inicializa o cliente SOAP.
+  // Inicializa o cliente SOAP.
   $soap = @new SoapClient($webservice, array(
       'trace' => TRUE,
       'exceptions' => TRUE,
       'compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP,
-      'connection_timeout' => 1000
+      'connection_timeout' => 1000,
     )
   );
 
-  // resgata o valor calculado.
+  // Resgata o valor calculado.
   $resposta = $soap->CalcPrecoPrazo($parms);
   $objeto = $resposta->CalcPrecoPrazoResult->Servicos->cServico;
 
-  // retorno.
+  // Retorno.
   if ($retorno == 'object') {
     return $objeto;
   }
