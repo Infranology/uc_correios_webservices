@@ -1,68 +1,68 @@
 <?php
 
 /**
+ * Função retorna via SOAP o valor do frete correios para diferentes metodos.
  *
- * Essa função utiliza o cep do remetente fixo dentro da função
- * Você especifica o cep destino e peso
- * o terceiro parametro é como você quer o retorno:
- * 'objeto', 'array', 'json'
- *
- * Se você precisar especificar mais variáveis para 
- * o PAC fique a vontade para atualizar a função
- * XD divirta-se
- *
+ * @param $servico
+ *   Define os diferentes metodos de envio:
+ *   - 41106 = pac sem contrato
+ *   - 40010 = sedex sem contrato
+ *   - 40215 = sedex 10, sem contrato
+ *   - 40290 = sedex hoje, sem contrato
+ *   - 40096 = sedex com contrato
+ *   - 40436 = sedex com contrato
+ *   - 40444 = sedex com contrato
+ *   - 81019 = e-sedex, com contrato
+ *   - 41068 = pac com contrato
+ * @param $retorno
+ *   Tipo de retorno de dados.
+ *   - object
+ *   - json
+ *   - soap = default
+ * 
+ * Coded by http://blog.shiguenori.com/2010/08/20/webservice-dos-correios/.
+ * Modified by Infranology.
  */
-function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300', $servico, $valor_declarado = '0', $retorno = 'array') {
-  // TRATA OS CEP'S
+
+function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, 
+  $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300', 
+  $servico, $valor_declarado = '0', $retorno) {
+  
+  // trata os cep's.
   $cep_destino = preg_replace("([^0-9])", '', $cep_destino);
   $cep_origem = preg_replace("([^0-9])", '', $cep_origem);
 
-  /**
-   * TIPOS DE FRETE
-   *
-   * 41106 = PAC sem contrato
-   * 40010 = SEDEX sem contrato
-   * 40215 = SEDEX 10, sem contrato
-   * 40290 = SEDEX Hoje, sem contrato
-   * 40096 = SEDEX com contrato
-   * 40436 = SEDEX com contrato
-   * 40444 = SEDEX com contrato
-   * 81019 = e-SEDEX, com contrato
-   * 41068 = PAC com contrato
-   *
-   */
   $webservice = 'http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx?WSDL';
 
-  // TORNA EM OBJETO AS VARIAVEIS
+  // torna em objeto as variaveis.
   $parms = new stdClass();
-  // PAC, SEDEX E ESEDEX (TODOS COM CONTRATO) - se vc precisar de mais tipos adicione aqui
+  // pac, sedex e esedex (todos com contrato).
   $parms->nCdServico = $servico;
-  // LOGIN DO CADASTRO NO CORREIOS (OPCIONAL)
+  // login do cadastro no correios (opcional).
   $parms->nCdEmpresa = $cod_empresa;
-  // SENHA DO CADASTRO NO CORREIOS (OPCIONAL)
-  $parms->sDsSenha = $senha; 
+  // senha do cadastro no correios (opcional).
+  $parms->sDsSenha = $senha;
+  // tipo de retorno.
   $parms->StrRetorno = 'xml';
-
-  // DADOS DINAMICOS
-  // CEP CLIENTE
+  // cep cliente.
   $parms->sCepDestino = $cep_destino;
-  // CEP DA LOJA (BD)
+  // cep da loja (bd).
   $parms->sCepOrigem = $cep_origem;
-  $parms->nVlPeso = $peso;
 
-  // VALORES MINIMOS DO PAC (SE VC PRECISAR ESPECIFICAR OUTROS FAÇA ISSO AQUI)
+  // informacoes de cubagem
+  $parms->nVlPeso = $peso;
   $parms->nVlComprimento = $comprimento;
   $parms->nVlDiametro = $diametro;
   $parms->nVlAltura = $altura;
   $parms->nVlLargura = $largura;
 
-  // OUTROS OBRIGATORIOS (MESMO VAZIO)
+  // outros obrigatorios (mesmo vazio).
   $parms->nCdFormato = 1;
   $parms->sCdMaoPropria = 'N';
   $parms->nVlValorDeclarado = $valor_declarado;
   $parms->sCdAvisoRecebimento = 'N';
 
-  // Inicializa o cliente SOAP
+  // inicializa o cliente SOAP.
   $soap = @new SoapClient($webservice, array(
       'trace' => TRUE,
       'exceptions' => TRUE,
@@ -71,11 +71,11 @@ function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_dest
     )
   );
 
-  // Resgata o valor calculado
+  // resgata o valor calculado.
   $resposta = $soap->CalcPrecoPrazo($parms);
   $objeto = $resposta->CalcPrecoPrazoResult->Servicos->cServico;
 
-  // RETORNO
+  // retorno.
   if ($retorno == 'object') {
     return $objeto;
   }
