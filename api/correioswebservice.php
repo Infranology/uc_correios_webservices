@@ -27,6 +27,9 @@
  * Modified by Infranology.
  */
 
+/**
+ * Implements calculo_frete_correios_api().
+ */
 function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem,
   $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300',
   $servico, $valor_declarado = '0', $retorno) {
