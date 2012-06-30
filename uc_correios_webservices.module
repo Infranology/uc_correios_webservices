@@ -2,15 +2,19 @@
 
 /**
  * @file
- * Shipping quote module that defines a shipping rate for each product base on weight and origin/destiny zip/postal code
+ * Shipping quote module that defines a shipping rate for each product base on
+ * weight and origin/destiny zip/postal code
  *
  * Coded by Wanderson S. Reis aka wasare [http://www.ospath.com]
  * Modified by Infranology
  */
+
 // API.
 include('api/correioswebservice.php');
 
-// Drupal Hooks.
+/**
+ * Drupal Hooks.
+ */
 
 /**
  * Implements hook_menu().
@@ -47,7 +51,6 @@ function uc_correios_webservices_perm() {
 }
 
 /**
- *
  * Implements hook_ca_predicate().
  *
  * Connect the correios_webservices action and event.
@@ -76,7 +79,9 @@ function uc_correios_webservices_ca_predicate() {
   return $predicates;
 }
 
-// Übercart Hooks.
+/**
+ * Übercart Hooks.
+ */
 
 /**
  * Implements Ubercart's hook_shipping_type().
@@ -127,7 +132,9 @@ function uc_correios_webservices_shipping_method() {
   return $methods;
 }
 
-// Menu Callbacks.
+/**
+ * Menu Callbacks.
+ */
 
 /**
  * Configure the store default shipping rate.
@@ -255,12 +262,15 @@ function uc_correios_webservices_admin_settings() {
   return system_settings_form($form);
 }
 
-// Module Functions.
+/**
+ * Module Functions.
+ */
 
 /**
- * List of delivery services by Correios without contract
+ * List of delivery services.
  *
  * @return array
+ *   Return an array of possible Correios services without contract.
  */
 function uc_correios_webservices_without_contract_services() {
   return array(
@@ -272,7 +282,7 @@ function uc_correios_webservices_without_contract_services() {
 }
 
 /**
- * List the methods of delivery selected
+ * List the methods of delivery selected.
  *
  * @return array
  */
@@ -357,7 +367,7 @@ function uc_correios_webservices_declared_value($value) {
 }
 
 /**
- * @param type $products
+ * @param $products
  *   Array with cart products.
  * @return array
  *   Return array with products information.
@@ -395,16 +405,16 @@ function uc_correios_webservices_products($products) {
   $weight = ceil($weight);
 
   return array(
-      'height' => $height,
-      'width' => $width,
-      'length' => $length,
-      'weight' => $weight,
-      'price' => $price,
+    'height' => $height,
+    'width' => $width,
+    'length' => $length,
+    'weight' => $weight,
+    'price' => $price,
   );
 }
 
 /**
- * Get origin postal code
+ * Get origin postal code.
  * @return type
  */
 function uc_correios_webservices_origin_postal_code() {
@@ -427,34 +437,34 @@ function uc_correios_webservices_destiny_postal_code($details) {
 }
 
 /**
- * Return errors from correios to user
+ * Return errors from correios to user.
  */
 function uc_correios_webservices_user_error_messages($code, $msg) {
   $before = '<span style="color:#e00;font-size:small">';
   $after = '</span>';
 
   $errors = array(
-    // CEP de destino inválido
+    // CEP de destino inválido.
     '-3',
-    // Peso excedido
+    // Peso excedido.
     '-4',
-    // Serviço indisponível para o trecho informado
+    // Serviço indisponível para o trecho informado.
     '-6',
-    // Precificação indisponível para o trecho informado
+    // Precificação indisponível para o trecho informado.
     '-10',
     // Sistema temporariamente fora do ar. Favor tentar mais tarde.
     '-33',
-    // Erro ao calcular a tarifa
+    // Erro ao calcular a tarifa.
     '-888',
-    // Localidade de destino não abrange o serviço informado
+    // Localidade de destino não abrange o serviço informado.
     '007',
-    // Serviço indisponível para o trecho informado
+    // Serviço indisponível para o trecho informado.
     '008',
     // CEP final pertencente a Área de Risco.
     // A entrega será realizada, temporariamente, na agência mais próxima do
     // endereço do destinatário.
     '010',
-    // Serviço indisponível, tente mais tarde
+    // Serviço indisponível, tente mais tarde.
     '7',
   );
 
@@ -462,12 +472,13 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
     return $before . $msg . $after;
   }
   else {
-    return '0'; // Return 0 for validation
+    // Return 0 for validation.
+    return '0';
   }
 }
 
 /**
- * Display logos
+ * Display logos.
  */
 function uc_correios_webservices_services_branding($key) {
   $path = base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/';
@@ -476,31 +487,39 @@ function uc_correios_webservices_services_branding($key) {
   $service = '';
 
   switch ($key) {
-    case '41106' :
+    case '41106':
       $service = 'pac';
       break;
-    case '40010' :
+
+    case '40010':
       $service = 'sedex';
       break;
-    case '40215' :
+
+    case '40215':
       $service = 'sedex-10';
       break;
-    case '40290' :
+
+    case '40290':
       $service = 'sedex-hoje';
       break;
+
     // Cases "With Contract".
-    case '41068' :
+    case '41068':
       $service = 'pac';
       break;
-    case '40096' :
+
+    case '40096':
       $service = 'sedex';
       break;
-    case '81019' :
+
+    case '81019':
       $service = 'e-sedex';
       break;
-    default :
+
+    default:
       $service = 'sedex';
       break;
+
   }
 
   return '<img style="margin:0 5px 0 10px;" class="uc_correios_webservices_img" src="' . $path . $service . '.png" alt="' . $name . '" /><br />';
