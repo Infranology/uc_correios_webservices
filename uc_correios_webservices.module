@@ -10,7 +10,7 @@
  */
 
 // API.
-include('api/correioswebservice.php');
+include 'api/correioswebservice.php';
 
 /**
  * Drupal Hooks.
@@ -27,7 +27,7 @@ function uc_correios_webservices_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('uc_correios_webservices_admin_settings'),
     'access arguments' => array('configure quotes'),
-    'type' => MENU_LOCAL_TASK
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
@@ -121,9 +121,9 @@ function uc_correios_webservices_shipping_method() {
         '40010' => t('SEDEX'),
         '40215' => t('SEDEX 10'),
         '40290' => t('SEDEX Hoje'),
-        '41068' => t('PAC'), // Define With Contract
-        '40096' => t('SEDEX'), // Define With Contract
-        '81019' => t('e-SEDEX'), // Define With Contract
+        '41068' => t('PAC'),
+        '40096' => t('SEDEX'),
+        '81019' => t('e-SEDEX'),
       ),
     ),
     'weight' => $weight['correios_webservices'],
@@ -157,7 +157,7 @@ function uc_correios_webservices_admin_settings() {
     '#default_value' => variable_get('uc_correios_webservices_contract', 0),
     '#options' => array(
       0 => t('No contract'),
-      1 => t('With contract')
+      1 => t('With contract'),
     ),
     '#required' => TRUE,
   );
@@ -285,7 +285,8 @@ function uc_correios_webservices_without_contract_services() {
 /**
  * List the methods of delivery selected.
  *
- * @return array
+ * @return
+ *   Return user login
  */
 function uc_correios_webservices_services() {
   $login = variable_get('uc_correios_webservices_username', NULL);
@@ -307,6 +308,8 @@ function uc_correios_webservices_services() {
  *   Quantity of products
  * @param type $unit
  *   Measuring unit
+ * @param type $type
+ *   Type of measure
  * @return
  *   Total length in cm
  */
@@ -437,6 +440,12 @@ function uc_correios_webservices_destiny_postal_code($details) {
 
 /**
  * Return errors from correios to user.
+ * @param type $code
+ *   message code
+ * @param type $msg
+ *   message text
+ * @return string
+ *   message for user 
  */
 function uc_correios_webservices_user_error_messages($code, $msg) {
   $before = '<span style="color:#e00;font-size:small">';
@@ -498,7 +507,7 @@ function uc_correios_webservices_services_branding($key) {
     case '40290':
       $service = 'sedex-hoje';
       break;
-    case '41068': // Cases With Contract
+    case '41068':
       $service = 'pac';
       break;
     case '40096': 
@@ -507,7 +516,7 @@ function uc_correios_webservices_services_branding($key) {
     case '81019':
       $service = 'e-sedex';
       break;
-    default:
+    default :
       $service = 'sedex';
       break;
   }
@@ -516,9 +525,9 @@ function uc_correios_webservices_services_branding($key) {
 }
 
 /**
- * @param $products
+ * @param type $products
  *   Array of cart contents.
- * @param $details
+ * @param type $details
  *   Order details other than product information.
  * @return mixed
  *   Object containing rate, error, and debugging information.
