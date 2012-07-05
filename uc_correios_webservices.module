@@ -285,8 +285,8 @@ function uc_correios_webservices_without_contract_services() {
 /**
  * List the methods of delivery selected.
  *
- * @return
- *   Return user login
+ * @return string
+ *   User login.
  */
 function uc_correios_webservices_services() {
   $login = variable_get('uc_correios_webservices_username', NULL);
@@ -302,16 +302,18 @@ function uc_correios_webservices_services() {
 }
 
 /**
- * @param type $length
- *   Length of product
- * @param type $qty
- *   Quantity of products
- * @param type $unit
- *   Measuring unit
- * @param type $type
- *   Type of measure
- * @return
- *   Total length in cm
+ * Converts measurements for cm.
+ *
+ * @param string $length
+ *   Length of product.
+ * @param string $qty
+ *   Quantity of products.
+ * @param string $unit
+ *   Measuring unit.
+ * @param string $type
+ *   Type of measure.
+ * @return string
+ *   Total length in cm.
  */
 function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
   $min_length = check_plain(variable_get('uc_correios_webservices_min_length', 16));
@@ -335,14 +337,16 @@ function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
 }
 
 /**
- * @param type $weight
- *   Weigth of product
- * @param type $qty
- *   Quantity of products
- * @param type $unit
- *   Measuring unit
- * @return
- *   Total weight in kg
+ * Converts weight for kg.
+ *
+ * @param string $weight
+ *   Weigth of product.
+ * @param string $qty
+ *   Quantity of products.
+ * @param string $unit
+ *   Measuring unit.
+ * @return string
+ *   Total weight in kg.
  */
 function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
   $total = $weight * $qty * uc_weight_conversion($unit, 'kg');
@@ -351,10 +355,12 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
 }
 
 /**
- * @param type $value
- *   Total purchase
- * @return
- *   Declared value
+ * Converts number format for declared value.
+ *
+ * @param string $value
+ *   Total purchase.
+ * @return string
+ *   Declared value.
  */
 function uc_correios_webservices_declared_value($value) {
   $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
@@ -371,7 +377,9 @@ function uc_correios_webservices_declared_value($value) {
 }
 
 /**
- * @param $products
+ * Built array with height, width, length, weight and price for products.
+ *
+ * @param array $products
  *   Array with cart products.
  * @return array
  *   Return array with products information.
@@ -417,7 +425,9 @@ function uc_correios_webservices_products($products) {
 
 /**
  * Get origin postal code.
- * @return type
+ *
+ * @return string
+ *   string with origin post code.
  */
 function uc_correios_webservices_origin_postal_code() {
   $code = variable_get('uc_quote_store_default_address', '');
@@ -426,10 +436,12 @@ function uc_correios_webservices_origin_postal_code() {
 }
 
 /**
- * @param type $details
- *   Get shipping details
- * @return type
- *   Return user postal code
+ * Get user postal code.
+ *
+ * @param array $details
+ *   Get shipping details.
+ * @return string
+ *   Return user postal code.
  */
 function uc_correios_webservices_destiny_postal_code($details) {
   $code = (object) $details;
@@ -440,12 +452,13 @@ function uc_correios_webservices_destiny_postal_code($details) {
 
 /**
  * Return errors from correios to user.
- * @param type $code
- *   message code
- * @param type $msg
- *   message text
+ *
+ * @param string $code
+ *   Message code.
+ * @param string $msg
+ *   Message text.
  * @return string
- *   message for user 
+ *   Message for user.
  */
 function uc_correios_webservices_user_error_messages($code, $msg) {
   $before = '<span style="color:#e00;font-size:small">';
@@ -487,6 +500,11 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
 
 /**
  * Display logos.
+ *
+ * @param string $key
+ *   Service number.
+ * @return string
+ *   show image for service.
  */
 function uc_correios_webservices_services_branding($key) {
   $path = base_path() . drupal_get_path('module', 'uc_correios_webservices') . '/images/';
@@ -525,11 +543,13 @@ function uc_correios_webservices_services_branding($key) {
 }
 
 /**
- * @param type $products
- *   Array of cart contents.
- * @param type $details
+ * Function to calculate the cost of delivery.
+ *
+ * @param array $products
+ *   Cart contents.
+ * @param array $details
  *   Order details other than product information.
- * @return mixed
+ * @return array
  *   Object containing rate, error, and debugging information.
  */
 function uc_correios_webservices_quote($products, $details) {
