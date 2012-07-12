@@ -8,7 +8,7 @@
  *
  * @param $servico
  *   Define os diferentes metodos de envio:
- *   - 41106 = pac sem contrato
+ *   - 41106 = pac sem contrato => default
  *   - 40010 = sedex sem contrato
  *   - 40215 = sedex 10, sem contrato
  *   - 40290 = sedex hoje, sem contrato
@@ -19,9 +19,9 @@
  *   - 41068 = pac com contrato
  * @param $retorno
  *   Tipo de retorno de dados.
- *   - object
+ *   - object = default
  *   - json
- *   - soap = default
+ *   - soap
  *
  * Coded by http://blog.shiguenori.com/2010/08/20/webservice-dos-correios/.
  * Modified by Infranology.
@@ -32,7 +32,7 @@
  */
 function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem,
   $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300',
-  $servico, $valor_declarado = '0', $retorno) {
+  $servico = '41106', $valor_declarado = '0', $retorno = 'object') {
 
   // Trata os cep's.
   $cep_destino = preg_replace("([^0-9])", '', $cep_destino);
