@@ -312,6 +312,7 @@ function uc_correios_webservices_services() {
  *   Measuring unit.
  * @param string $type
  *   Type of measure.
+ *
  * @return string
  *   Total length in cm.
  */
@@ -345,6 +346,7 @@ function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
  *   Quantity of products.
  * @param string $unit
  *   Measuring unit.
+ *
  * @return string
  *   Total weight in kg.
  */
@@ -359,6 +361,7 @@ function uc_correios_webservices_weight_convert($weight, $qty, $unit) {
  *
  * @param string $value
  *   Total purchase.
+ *
  * @return string
  *   Declared value.
  */
@@ -366,11 +369,12 @@ function uc_correios_webservices_declared_value($value) {
   $key = variable_get('uc_correios_webservices_send_declared_value', FALSE);
 
   switch ($key) {
-    case 1 :
+    case 1:
       $value = number_format($value, 2, '.', '');
       return check_plain($value);
       break;
-    default :
+
+    default:
       return '0';
       break;
   }
@@ -381,6 +385,7 @@ function uc_correios_webservices_declared_value($value) {
  *
  * @param array $products
  *   Array with cart products.
+ *
  * @return array
  *   Return array with products information.
  */
@@ -408,7 +413,7 @@ function uc_correios_webservices_products($products) {
     $price += $product->price * $product->qty;
   }
 
-  // Rounding up values
+  // Rounding up values.
   $height = ceil($height);
   $width = ceil($width);
   $length = ceil($length);
@@ -440,6 +445,7 @@ function uc_correios_webservices_origin_postal_code() {
  *
  * @param array $details
  *   Get shipping details.
+ *
  * @return string
  *   Return user postal code.
  */
@@ -457,6 +463,7 @@ function uc_correios_webservices_destiny_postal_code($details) {
  *   Message code.
  * @param string $msg
  *   Message text.
+ *
  * @return string
  *   Message for user.
  */
@@ -503,6 +510,7 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
  *
  * @param string $key
  *   Service number.
+ *
  * @return string
  *   show image for service.
  */
@@ -516,25 +524,32 @@ function uc_correios_webservices_services_branding($key) {
     case '41106':
       $service = 'pac';
       break;
+
     case '40010':
       $service = 'sedex';
       break;
+
     case '40215':
       $service = 'sedex-10';
       break;
+
     case '40290':
       $service = 'sedex-hoje';
       break;
+
     case '41068':
       $service = 'pac';
       break;
-    case '40096': 
+
+    case '40096':
       $service = 'sedex';
       break;
+
     case '81019':
       $service = 'e-sedex';
       break;
-    default :
+
+    default:
       $service = 'sedex';
       break;
   }
@@ -549,6 +564,7 @@ function uc_correios_webservices_services_branding($key) {
  *   Cart contents.
  * @param array $details
  *   Order details other than product information.
+ *
  * @return array
  *   Object containing rate, error, and debugging information.
  */
