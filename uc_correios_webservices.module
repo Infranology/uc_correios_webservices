@@ -352,12 +352,12 @@ function uc_correios_webservices_declared_value($value) {
   switch ($key) {
     case 1:
       $value = number_format($value, 2, '.', '');
-    return check_plain($value);
-    break;
+      return check_plain($value);
+      break;
 
     default:
-    return '0';
-    break;
+      return '0';
+      break;
   }
 }
 
