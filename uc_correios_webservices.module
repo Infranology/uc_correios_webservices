@@ -438,7 +438,7 @@ function uc_correios_webservices_cubage($height, $width, $length) {
 }
 
 /**
- * Test values ​​to meet the minimum measure.
+ * Test values to meet the minimum measure.
  *
  * @param array $height
  *   Height of all products.
