@@ -30,9 +30,20 @@
 /**
  * Implements calculo_frete_correios_api().
  */
-function calculo_frete_correios_api($cod_empresa, $senha, $cep_origem,
-  $cep_destino, $altura, $largura, $diametro, $comprimento, $peso = '0.300',
-  $servico = '41106', $valor_declarado = '0', $retorno = 'object') {
+function uc_correios_webservices_correios_api(
+  $cod_empresa,
+  $senha,
+  $cep_origem,
+  $cep_destino,
+  $altura,
+  $largura,
+  $diametro,
+  $comprimento,
+  $peso = '0.300',
+  $servico = '41106',
+  $valor_declarado = '0',
+  $retorno = 'object'
+) {
 
   // Trata os cep's.
   $cep_destino = preg_replace("([^0-9])", '', $cep_destino);

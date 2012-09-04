@@ -26,7 +26,7 @@ function uc_correios_webservices_menu() {
     'title' => 'Correios Webservices',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('uc_correios_webservices_admin_settings'),
-    'access arguments' => array('configure quotes'),
+    'access arguments' => array('administer correios quotes'),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -153,7 +153,7 @@ function uc_correios_webservices_admin_settings() {
   $form['uc_correios_webservices_general']['uc_correios_webservices_contract'] = array(
     '#type' => 'select',
     '#title' => t('Contract type'),
-    '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+    '#description' => t('Select the type of contract with the Correios.'),
     '#default_value' => variable_get('uc_correios_webservices_contract', 0),
     '#options' => array(
       0 => t('No contract'),
@@ -165,7 +165,7 @@ function uc_correios_webservices_admin_settings() {
   $form['uc_correios_webservices_general']['uc_correios_webservices_without_contract_services'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Services'),
-    '#description' => t('Select the kinds of shipping services will be avaliable for costumers.'),
+    '#description' => t('Select the kinds of shipping services will be avaliable for customers.'),
     '#default_value' => variable_get('uc_correios_webservices_without_contract_services', uc_correios_webservices_without_contract_services()),
     '#options' => uc_correios_webservices_without_contract_services(),
   );
@@ -174,7 +174,7 @@ function uc_correios_webservices_admin_settings() {
     '#type' => 'textfield',
     '#title' => t('Username'),
     '#size' => 20,
-    '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+    '#description' => t('Type your Correios username.'),
     '#default_value' => variable_get('uc_correios_webservices_username', ''),
     '#required' => FALSE,
   );
@@ -183,7 +183,7 @@ function uc_correios_webservices_admin_settings() {
     '#type' => 'textfield',
     '#title' => t('Password'),
     '#size' => 20,
-    '#description' => t('ADICIONAR TEXTO DE AJUDA'),
+    '#description' => t('Type your Correios password.'),
     '#default_value' => variable_get('uc_correios_webservices_password', ''),
     '#required' => FALSE,
   );
@@ -306,35 +306,16 @@ function uc_correios_webservices_services() {
  *
  * @param string $length
  *   Length of product.
- * @param string $qty
- *   Quantity of products.
  * @param string $unit
  *   Measuring unit.
- * @param string $type
- *   Type of measure.
  *
  * @return string
  *   Total length in cm.
  */
-function uc_correios_webservices_length_convert($length, $qty, $unit, $type) {
-  $min_length = check_plain(variable_get('uc_correios_webservices_min_length', 16));
-  $min_height = check_plain(variable_get('uc_correios_webservices_min_height', 2));
-  $min_width = check_plain(variable_get('uc_correios_webservices_min_width', 11));
+function uc_correios_webservices_length_convert($length, $unit) {
+  $total = $length * uc_length_conversion($unit, 'cm');
 
-  $total = $length * $qty * uc_length_conversion($unit, 'cm');
-
-  if ($type == 'length' && $total < $min_length) {
-    return $min_length;
-  }
-  elseif ($type == 'height' && $total < $min_height) {
-    return $min_height;
-  }
-  elseif ($type == 'width' && $total < $min_width) {
-    return $min_width;
-  }
-  else {
-    return $total;
-  }
+  return $total;
 }
 
 /**
@@ -371,13 +352,132 @@ function uc_correios_webservices_declared_value($value) {
   switch ($key) {
     case 1:
       $value = number_format($value, 2, '.', '');
-      return check_plain($value);
+    return check_plain($value);
+    break;
+
+    default:
+    return '0';
+    break;
+  }
+}
+
+/**
+ * Defines the total cubage.
+ *
+ * @param array $height
+ *   Height of all products.
+ * @param array $width
+ *   Width of all products.
+ * @param array $length
+ *   Length of all products.
+ *
+ * @return array
+ *   Total cubage.
+ */
+function uc_correios_webservices_cubage($height, $width, $length) {
+
+  // Sets the cubage of all products.
+  $all_produtcs = array();
+  for ($i = 0; $i < count($height); $i++) {
+    $all_produtcs[$i] = $height[$i] * $width[$i] * $length[$i];
+  }
+
+  // Total cubage.
+  $cubage_total = '';
+  foreach ($all_produtcs as $value) {
+    $cubage_total += $value;
+  }
+
+  // Defines the greatest.
+  $find = array(
+    'height' => max($height),
+    'width' => max($width),
+    'length' => max($length),
+  );
+  $greatest = array_search(max($find), $find);
+
+  // Dividing the value of scaling of all products.
+  // With the measured value of greater.
+  $division = $cubage_total / max($find);
+
+  // Total square root.
+  $root = round(sqrt($division), 1);
+
+  // Sets the final cubage.
+  $cubage = array();
+  switch ($greatest) {
+    case 'height':
+      $cubage = array(
+        'height' => max($height),
+        'width' => $root,
+        'length' => $root,
+      );
+      break;
+
+    case 'width':
+      $cubage = array(
+        'height' => $root,
+        'width' => max($width),
+        'length' => $root,
+      );
+      break;
+
+    case 'length':
+      $cubage = array(
+        'height' => $root,
+        'width' => $root,
+        'length' => max($length),
+      );
       break;
 
     default:
-      return '0';
       break;
   }
+
+  return $cubage;
+}
+
+/**
+ * Test values ​​to meet the minimum measure.
+ *
+ * @param array $height
+ *   Height of all products.
+ * @param array $width
+ *   Width of all products.
+ * @param array $length
+ *   Length of all products.
+ *
+ * @return array
+ *   Cubage corrected.
+ */
+function uc_correios_webservices_test_min_cubage($height, $width, $length) {
+  // Get min values.
+  $min_length = check_plain(variable_get('uc_correios_webservices_min_length', 16));
+  $min_height = check_plain(variable_get('uc_correios_webservices_min_height', 2));
+  $min_width = check_plain(variable_get('uc_correios_webservices_min_width', 11));
+
+  // Test height.
+  if ($height < $min_height) {
+    $height = $min_height;
+  }
+
+  // Test width.
+  if ($width < $min_width) {
+    $width = $min_width;
+  }
+
+  // Test length.
+  if ($length < $min_length) {
+    $length = $min_length;
+  }
+
+  // Return the values.
+  return array(
+    'height' => $height,
+    'width' => $width,
+    'length' => $length,
+  );
+
 }
 
 /**
@@ -390,11 +490,12 @@ function uc_correios_webservices_declared_value($value) {
  *   Return array with products information.
  */
 function uc_correios_webservices_products($products) {
-  $height = '';
-  $width = '';
-  $length = '';
+  $height = array();
+  $width = array();
+  $length = array();
   $weight = '';
   $price = '';
+  $i = 0;
 
   foreach ($products as $product) {
     $qty = $product->qty;
@@ -402,9 +503,24 @@ function uc_correios_webservices_products($products) {
     $length_units = $product->length_units;
 
     // Product weight.
-    $height += uc_correios_webservices_length_convert($product->height, $qty, $length_units, 'height');
-    $width += uc_correios_webservices_length_convert($product->width, $qty, $length_units, 'width');
-    $length += uc_correios_webservices_length_convert($product->length, $qty, $length_units, 'length');
+    $height[$i] = uc_correios_webservices_length_convert($product->height, $length_units);
+    $width[$i] = uc_correios_webservices_length_convert($product->width, $length_units);
+    $length[$i] = uc_correios_webservices_length_convert($product->length, $length_units);
+
+    // Repeats the value in the array as the amount.
+    if ($qty > 1) {
+      $s = $i;
+
+      for ($n = 1; $n < $qty; $n++) {
+        $s++;
+        $height[$s] = $height[$i];
+        $width[$s] = $width[$i];
+        $length[$s] = $length[$i];
+      }
+
+      $i = $s;
+    }
+    $i++;
 
     // Product weight.
     $weight += uc_correios_webservices_weight_convert($product->weight, $qty, $weight_units);
@@ -413,16 +529,17 @@ function uc_correios_webservices_products($products) {
     $price += $product->price * $product->qty;
   }
 
+  // Sets cubage.
+  $cubage = uc_correios_webservices_cubage($height, $width, $length);
+  $cubage_total = uc_correios_webservices_test_min_cubage($cubage['height'], $cubage['width'], $cubage['length']);
+
   // Rounding up values.
-  $height = ceil($height);
-  $width = ceil($width);
-  $length = ceil($length);
-  $weight = ceil($weight);
+  $weight = round($weight, 1);
 
   return array(
-    'height' => $height,
-    'width' => $width,
-    'length' => $length,
+    'height' => $cubage_total['height'],
+    'width' => $cubage_total['width'],
+    'length' => $cubage_total['length'],
     'weight' => $weight,
     'price' => $price,
   );
@@ -459,12 +576,12 @@ function uc_correios_webservices_destiny_postal_code($details) {
 /**
  * Return errors from correios to user.
  *
- * @param string $code
+ * @param int $code
  *   Message code.
  * @param string $msg
  *   Message text.
  *
- * @return string
+ * @return mixed
  *   Message for user.
  */
 function uc_correios_webservices_user_error_messages($code, $msg) {
@@ -500,8 +617,7 @@ function uc_correios_webservices_user_error_messages($code, $msg) {
     return $before . $msg . $after;
   }
   else {
-    // Return 0 for validation.
-    return '0';
+    return 0;
   }
 }
 
@@ -599,7 +715,7 @@ function uc_correios_webservices_quote($products, $details) {
     if ($service != 0) {
 
       $display_branding = variable_get('uc_correios_webservices_display_branding', TRUE);
-      $delivery = calculo_frete_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
+      $delivery = uc_correios_webservices_correios_api($cod_empresa, $senha, $cep_origem, $cep_destino, $altura, $largura, $diametro, $comprimento, $peso, $service, $valor_declarado, $retorno);
 
       $delivery_name = t('@method', array('@method' => $method['correios_webservices']['quote']['accessorials'][$key]));
       $delivery_price = str_replace(',', '.', check_plain($delivery->Valor));
@@ -628,10 +744,10 @@ function uc_correios_webservices_quote($products, $details) {
       // Error reports.
       if ($delivery_error_code != 0) {
         $delivery_user_error_msg = uc_correios_webservices_user_error_messages($delivery_error_code, $delivery_error_msg);
-        $delivery_error_log = t('error: ') . $delivery_error_code . ' - ' . $delivery_error_msg;
+        $delivery_error_log = t('error: !error_code - !error_msg', array('!error_code' => $delivery_error_code, '!error_msg' => $delivery_error_msg));
 
         // Error records in the Drupal.
-        watchdog('correios', $delivery_error_log, '', WATCHDOG_ERROR, NULL);
+        watchdog('correios', 'error: !error_code - !error_msg', array('!error_code' => $delivery_error_code, '!error_msg' => $delivery_error_msg), WATCHDOG_ERROR);
 
         // Errors validation.
         if ($delivery_user_error_msg != 0) {
