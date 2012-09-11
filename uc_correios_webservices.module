@@ -352,12 +352,12 @@ function uc_correios_webservices_declared_value($value) {
   switch ($key) {
     case 1:
       $value = number_format($value, 2, '.', '');
-      return check_plain($value);
-      break;
+    return check_plain($value);
+    break;
 
     default:
-      return '0';
-      break;
+    return '0';
+    break;
   }
 }
 
@@ -396,12 +396,16 @@ function uc_correios_webservices_cubage($height, $width, $length) {
   );
   $greatest = array_search(max($find), $find);
 
-  // Dividing the value of scaling of all products.
-  // With the measured value of greater.
-  $division = $cubage_total / max($find);
-
-  // Total square root.
-  $root = round(sqrt($division), 1);
+  // Test products without size
+  if ($cubage_total === 0) {
+    $root = 0;
+  } else {
+    // Dividing the value of scaling of all products.
+    // With the measured value of greater.
+    $division = $cubage_total / max($find);
+      // Total square root.
+    $root = round(sqrt($division), 1);
+  }
 
   // Sets the final cubage.
   $cubage = array();
@@ -438,7 +442,7 @@ function uc_correios_webservices_cubage($height, $width, $length) {
 }
 
 /**
- * Test values to meet the minimum measure.
+ * Test values ​​to meet the minimum measure.
  *
  * @param array $height
  *   Height of all products.
